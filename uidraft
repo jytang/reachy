@@ -1,0 +1,147 @@
+[ SCOREBOARD DISPLAY LAYOUT ]
+-----------------------------
+
+game1: 3P (E1B1R1) ~ Joshua, Kenta, Thao ~ 2016-11-05 14:05:00
+Round       Joshua    Kenta     Thao
+0           35000     35000     35000
+E1          33400     39800     31800
+E1B1R1      33400     39800     31800
+
+________________________________________
+
+[ INITIAL SCENARIO: Main menu ]
+-------------------------------
+
+<banner>
+
+*** Current existing game(s) in database:
+  1) game1: 3P (E1) ~ Joshua, Kenta, Thao ~ 2016-11-05 14:05:00
+  2) game2: 4P (E2B1) ~ Joshua, Ken, Kenta, Thao ~ 2016-12-05 14:05:00
+
+*** Main menu:
+  1) View or update existing game scoreboard
+  2) Add new game
+  3) Delete existing game
+  4) Display all scoreboards
+---> Enter your choice:
+
+________________________________________
+
+[ SCENARIO 1: Main menu option 1 - View/update ]
+------------------------------------------------
+
+(Enter "x" to go back to main menu.)
+
+*** Choose existing game:
+  1) game1: 3P (E1) ~ Joshua, Kenta, Thao ~ 2016-11-05 14:05:00
+  2) game2: 4P (E2B1) ~ Joshua, Ken, Kenta, Thao ~ 2016-12-05 14:05:00
+---> Enter your choice:
+
+<display scoreboard here>
+
+________________________________________
+
+[ SCENARIO 2: Main menu option 2 - Add game ]
+---------------------------------------------
+
+(Enter "x" to go back to main menu.)
+
+---> Game name:
+
+---> Game mode (3P/4P):
+
+---> Player names (separated by spaces):
+
+<#write to JSON file here!>
+*** New game created! Scoreboard:
+
+<display initial scoreboard with round 0>
+
+________________________________________
+
+[ SCENARIO 3: Main menu option 3 - Delete ]
+-------------------------------------------
+
+*** Choose existing game to delete:
+  1) game1: 3P (E1) ~ Joshua, Kenta, Thao ~ 2016-11-05 14:05:00
+  2) game2: 4P (E2B1) ~ Joshua, Ken, Kenta, Thao ~ 2016-12-05 14:05:00
+---> Enter your choice:
+
+---> Deleting game "<name>". This action cannot be undone.
+  Are you sure? (y/N)
+
+<#delete JSON file here!>
+*** Game "<name>" deleted from database.
+
+________________________________________
+
+[ SCENARIO 4: Main menu option 4 - Display all ]
+------------------------------------------------
+
+<show all game scoreboards>
+
+________________________________________
+
+[ SCENARIO SUB-0: Sub-menu options ]
+------------------------------------
+
+(Enter "x" to go back to main menu.)
+
+*** Options:
+  1) Add next round result
+  2) Remove last round entry
+  3) Delete current game
+  4) Choose a different game
+  5) Add new game
+---> Enter your choice:
+
+________________________________________
+
+[ SCENARIO SUB-1: Option 1 - Add round ]
+----------------------------------------
+
+(Enter "x" to return to game options.)
+
+---> Dealer's name:
+
+---> Winner's name:
+
+---> Hand value (e.g. 4 han 50 fu):
+
+*** Game scoreboard updated.
+
+<display updated scoreboard>
+<go back to sub-menu>
+
+________________________________________
+
+[ SCENARIO SUB-2: Option 2 - Remove last round ]
+------------------------------------------------
+
+---> Removing last round entry:
+<print round only. with names.>
+
+  Are you sure? (y/N)
+
+*** Game scoreboard updated.
+
+<display updated scoreboard>
+<go back to sub-menu>
+
+________________________________________
+
+[ SCENARIO SUB-3: Option 3 - Delete game ]
+------------------------------------------
+
+---> Deleting game "<name>". Are you sure? (y/N)
+
+<#delete JSON file here!>
+*** Game "<name>" deleted from database.
+
+________________________________________
+
+[ SCENARIO SUB-4: Option 4 - Add new game ]
+-------------------------------------------
+
+<#same as Scenario 2: Main menu - Add game>
+
