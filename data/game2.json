@@ -1,0 +1,52 @@
+{
+  "filename": "game2",
+  "date": "2016-12-05 14:05:00",
+  "mode": "4P",
+  "players": [ "Joshua", "Ken", "Kenta", "Thao" ],
+  "scoreboard": [
+    {
+      "wind": null,
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "Joshua": 25000,
+        "Ken": 25000,
+        "Kenta": 25000,
+        "Thao": 25000
+      }
+    },
+    {
+      "wind": "E1",
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "Joshua": 25000,
+        "Ken": 37000,
+        "Kenta": 13000,
+        "Thao": 25000
+      }
+    },
+    {
+      "wind": "E1",
+      "bonus": 1,
+      "riichi": 2,
+      "scores": {
+        "Joshua": 37300,
+        "Ken": 37000,
+        "Kenta": 700,
+        "Thao": 25000
+      }
+    },
+    {
+      "wind": "E2",
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "Joshua": 37300,
+        "Ken": 40900,
+        "Kenta": -3200,
+        "Thao": 25000
+      }
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "filename": "game1",
+  "date": "2016-11-05 14:05:00",
+  "mode": "3P",
+  "players": [ "Joshua", "Kenta", "Thao" ],
+  "scoreboard": [
+    {
+      "wind": null,
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "Joshua": 35000,
+        "Kenta": 35000,
+        "Thao": 35000
+      }
+    },
+    {
+      "wind": "E1",
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "Joshua": 33400,
+        "Kenta": 39800,
+        "Thao": 31800
+      }
+    }
+  ]
+}

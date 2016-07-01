@@ -1,3 +1,13 @@
+[ Notations in this draft ]
+---------------------------
+
+<asdf>      : Display pre-defined content here
+<#comment>  : Comments, normally to note read/write to disc actions
+
+* Misc: timestamp format might change to match JSON/Ruby style
+
+________________________________________
+
 [ SCOREBOARD DISPLAY LAYOUT ]
 -----------------------------
 
@@ -5,7 +15,7 @@ game1: 3P (E1B1R1) ~ Joshua, Kenta, Thao ~ 2016-11-05 14:05:00
 Round       Joshua    Kenta     Thao
 0           35000     35000     35000
 E1          33400     39800     31800
-E1B1R1      33400     39800     31800
+E1B1R2      33400     39800     31800
 
 ________________________________________
 
@@ -79,6 +89,7 @@ ________________________________________
 ------------------------------------------------
 
 <show all game scoreboards>
+<display main menu>
 
 ________________________________________
 
