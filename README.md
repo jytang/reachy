@@ -1,6 +1,6 @@
 # Reachy
 
-* When you reach the end of your rope, tie a knot and hang on *
+*When you reach the end of your rope, tie a knot and hang on*
 
 ```
 .........................................................................................
