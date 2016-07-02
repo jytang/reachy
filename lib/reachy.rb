@@ -4,8 +4,8 @@ require 'rubygems'
 require 'json'
 require 'pp'
 
-require './reachy/game'
-require './reachy/round'
+require_relative 'reachy/game'
+require_relative 'reachy/round'
 
 ##############################################
 # TODO: Main functionality
