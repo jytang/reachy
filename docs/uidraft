@@ -58,7 +58,7 @@ ________________________________________
 
 ---> Game name:
 
----> Game mode (3P/4P):
+---> Number of players (3 or 4):
 
 ---> Player names (separated by spaces):
 
@@ -100,10 +100,11 @@ ________________________________________
 
 *** Options:
   1) Add next round result
-  2) Remove last round entry
-  3) Delete current game
-  4) Choose a different game
-  5) Add new game
+  2) Declare riichi
+  3) Remove last round entry
+  4) Delete current game
+  5) Choose a different game
+  6) Add new game
 ---> Enter your choice:
 
 ________________________________________
@@ -126,7 +127,22 @@ ________________________________________
 
 ________________________________________
 
-[ SCENARIO SUB-2: Option 2 - Remove last round ]
+[ SCENARIO SUB-2: Option 2 - Declare riichi ]
+---------------------------------------------
+
+(Enter "x" to return to game options.)
+
+---> Player who declared riichi:
+
+*** Riichi stick added.
+  Bonus sticks  : <current round bonus>
+  Riichi sticks : <current round riichi>
+
+<go back to sub-menu>
+
+________________________________________
+
+[ SCENARIO SUB-3: Option 3 - Remove last round ]
 ------------------------------------------------
 
 ---> Removing last round entry:
@@ -141,7 +157,7 @@ ________________________________________
 
 ________________________________________
 
-[ SCENARIO SUB-3: Option 3 - Delete game ]
+[ SCENARIO SUB-4: Option 4 - Delete game ]
 ------------------------------------------
 
 ---> Deleting game "<name>". Are you sure? (y/N)
@@ -151,7 +167,14 @@ ________________________________________
 
 ________________________________________
 
-[ SCENARIO SUB-4: Option 4 - Add new game ]
+[ SCENARIO SUB-5: Option 5 - Change game ]
+------------------------------------------
+
+<go back to scenario 1: main menu option 1 - view/update>
+
+________________________________________
+
+[ SCENARIO SUB-6: Option 6 - Add new game ]
 -------------------------------------------
 
 <#same as Scenario 2: Main menu - Add game>
