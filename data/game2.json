@@ -7,6 +7,7 @@
   "scoreboard": [
     {
       "wind": null,
+      "number": 0,
       "bonus": 0,
       "riichi": 0,
       "scores": {
@@ -17,7 +18,8 @@
       }
     },
     {
-      "wind": "E1",
+      "wind": "E",
+      "number": 1,
       "bonus": 0,
       "riichi": 0,
       "scores": {
@@ -28,7 +30,8 @@
       }
     },
     {
-      "wind": "E1",
+      "wind": "E",
+      "number": 1,
       "bonus": 1,
       "riichi": 2,
       "scores": {
@@ -39,7 +42,8 @@
       }
     },
     {
-      "wind": "E2",
+      "wind": "E",
+      "number": 2,
       "bonus": 0,
       "riichi": 0,
       "scores": {

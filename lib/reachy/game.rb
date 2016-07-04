@@ -63,8 +63,14 @@ class Game
 
   # Add riichi stick declared by player
   # Param: player - string of player's name
+  # Return: true if successful, else false
   def add_riichi(player)
-    @scoreboard.last.add_riichi(player)
+    if @players.include? player
+      return @scoreboard.last.add_riichi(player)
+    else
+      printf "Error: \"%s\" not in current game's players list\n", player
+      return false
+    end
   end
 
   # Print scoreboard header
@@ -80,6 +86,9 @@ class Game
 
   # Print entire scoreboard
   def print_scoreboard
+    self.print_title
+    (COL_SPACING * (@mode+1)).times { printf "-" }
+    puts nil
     self.print_header
     @scoreboard.each do |r|
       r.print_scores
@@ -99,6 +108,7 @@ class Game
   def print_title
     printf "%s: %dP (%s) ~ %s ~ %s", @filename, @mode, @scoreboard.last.name,
       @players.join(", "), @last_updated
+    puts nil
   end
 
 end
