@@ -1,8 +1,6 @@
 #!/usr/bin/ruby
 
 require 'rubygems'
-require 'json'
-require 'pp'
 
 require_relative 'reachy/game'
 require_relative 'reachy/round'
