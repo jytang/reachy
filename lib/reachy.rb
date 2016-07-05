@@ -40,7 +40,7 @@ module Reachy
              "  4) Display all scoreboards"
         print "---> Enter your choice: "
         choice = gets
-        if !choice then abort end # EOF
+        if !choice then self.goodbye end # EOF
         case choice.strip
         when "1"
           puts "\n[View or update existing game scoreboard]"
@@ -81,7 +81,7 @@ module Reachy
         self.display_all_games
         print "---> Enter your choice: "
         choice = gets
-        if !choice then abort end # EOF
+        if !choice then self.goodbye end # EOF
         choice = choice.strip
         case choice
         when "x"
@@ -114,7 +114,7 @@ module Reachy
       until unique do
         print "---> Game name: "
         name = gets
-        if !name then abort end # EOF
+        if !name then self.goodbye end # EOF
         name = name.strip
         if name == "x" then return false end # main menu
         unique = true
@@ -132,7 +132,7 @@ module Reachy
       until good do
         print "---> Number of players (3 or 4): "
         nump = gets
-        if !nump then abort end # EOF
+        if !nump then self.goodbye end # EOF
         nump = nump.strip
         if nump == "x" then return false end # main menu
         nump = nump.to_i
@@ -148,7 +148,7 @@ module Reachy
       until good do
         print "---> Player names (separated by spaces): "
         players = gets
-        if !players then abort end # EOF
+        if !players then self.goodbye end # EOF
         players = players.strip
         if players == "x" then return false end # main menu
         players = players.split
@@ -193,7 +193,7 @@ module Reachy
         self.display_all_games
         print "---> Enter your choice: "
         choice = gets
-        if !choice then abort end
+        if !choice then self.goodbye end
         choice = choice.strip
         case choice
         when "x"
@@ -220,7 +220,7 @@ module Reachy
       printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
       print "  Are you sure? (y/N) "
       conf = gets
-      if !conf then abort end
+      if !conf then self.goodbye end
       conf = conf.strip.downcase
       if conf == "y"
         # Move associated json file to trash.
@@ -262,7 +262,7 @@ module Reachy
              "  7) Add new game\n", game.filename
         print "---> Enter your choice: "
         choice = gets
-        if !choice then abort end # EOF
+        if !choice then self.goodbye end # EOF
         case choice.strip
         when "x"
           puts nil
@@ -502,5 +502,20 @@ module Reachy
       end
     end
 
+    # Display winners of every game
+    def display_all_winners
+      puts "Current winners:"
+      @games.each do |game|
+        winner, winner_score = game.scoreboard.last.scores.max_by{ |player, score| score}
+        printf "%s: %s - %d points\n", game.filename, winner, winner_score
+      end
+    end
+
+    # Message to print when quitting program
+    def goodbye
+      puts "\n\nGoodbye."
+      self.display_all_winners
+      abort
+    end
   end
 end
