@@ -116,14 +116,50 @@ ________________________________________
 
 ---> Dealer's name:
 
----> Winner's name:
+*** Round result type:
+  1) Tsumo
+  2) Ron
+  3) Tenpai
+  4) Noten
+  5) Chombo
+---> Select round result:
 
----> Hand value (e.g. 4 han 50 fu):
+<#handle new round, then continue here>
 
 *** Game scoreboard updated.
 
 <display updated scoreboard>
 <go back to sub-menu>
+
+________________________________________
+
+[ SCENARIO SUB-1a: Option 1,2 - Tsumo/ron ]
+-------------------------------------------
+
+---> Winner's name:
+
+---> Hand value (e.g. 4 han 50 fu):
+
+________________________________________
+
+[ SCENARIO SUB-1b: Option 3 - Tenpai ]
+--------------------------------------
+
+---> Players in tenpai (separated by space):
+
+________________________________________
+
+[ SCENARIO SUB-1c: Option 4 - Noten ]
+-------------------------------------
+
+<#nothing to display here>
+
+________________________________________
+
+[ SCENARIO SUB-1d: Option 5 - Chombo]
+--------------------------------------
+
+---> Player who chombo:
 
 ________________________________________
 
