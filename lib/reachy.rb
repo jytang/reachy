@@ -39,8 +39,9 @@ module Reachy
              "  3) Delete existing game\n" \
              "  4) Display all scoreboards"
         print "---> Enter your choice: "
-        choice = gets.strip
-        case choice
+        choice = gets
+        if !choice then abort end # EOF
+        case choice.strip
         when "1"
           puts "\n[View or update existing game scoreboard]"
           puts nil
@@ -79,8 +80,9 @@ module Reachy
         puts "*** Choose existing game:"
         self.display_all_games
         print "---> Enter your choice: "
-        choice = gets.strip
-        puts nil
+        choice = gets
+        if !choice then abort end # EOF
+        choice = choice.strip
         case choice
         when "x"
           return false # to main menu
@@ -111,7 +113,9 @@ module Reachy
       unique = false
       until unique do
         print "---> Game name: "
-        name = gets.strip
+        name = gets
+        if !name then abort end # EOF
+        name = name.strip
         if name == "x" then return false end # main menu
         unique = true
         @games.each do |game|
@@ -127,7 +131,9 @@ module Reachy
       good = false
       until good do
         print "---> Number of players (3 or 4): "
-        nump = gets.strip
+        nump = gets
+        if !nump then abort end # EOF
+        nump = nump.strip
         if nump == "x" then return false end # main menu
         nump = nump.to_i
         if nump == 3 or nump == 4
@@ -141,7 +147,9 @@ module Reachy
       good = false
       until good do
         print "---> Player names (separated by spaces): "
-        players = gets.strip
+        players = gets
+        if !players then abort end # EOF
+        players = players.strip
         if players == "x" then return false end # main menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
@@ -184,7 +192,9 @@ module Reachy
         puts "*** Choose existing game to delete:"
         self.display_all_games
         print "---> Enter your choice: "
-        choice = gets.strip
+        choice = gets
+        if !choice then abort end
+        choice = choice.strip
         case choice
         when "x"
           return # to main menu
@@ -209,7 +219,9 @@ module Reachy
     def confirm_delete(chosen_game)
       printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
       print "  Are you sure? (y/N) "
-      conf = gets.strip.downcase
+      conf = gets
+      if !conf then abort end
+      conf = conf.strip.downcase
       if conf == "y"
         # Move associated json file to trash.
         filename = chosen_game.filename + ".json"
@@ -249,8 +261,9 @@ module Reachy
              "  6) Choose a different game\n" \
              "  7) Add new game\n", game.filename
         print "---> Enter your choice: "
-        choice = gets.strip
-        case choice
+        choice = gets
+        if !choice then abort end # EOF
+        case choice.strip
         when "x"
           puts nil
           return # to main menu
