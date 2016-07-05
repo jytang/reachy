@@ -33,7 +33,8 @@ class Game
 
   # Read JSON database file and delegate to initialize() to repopulate object
   def read_data
-    file = File.read("../data/" + @filename + ".json")
+    filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
+    file = File.read(filepath)
     db = JSON.parse(file)
     self.initialize(db)
   end
@@ -42,7 +43,8 @@ class Game
   def write_data
     hash = self.instance_variables.each_with_object({}) \
       { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
-    File.open("../data/" + @filename + ".json", "w") do |f|
+    filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
+    File.open(filepath, "w") do |f|
       f.write(JSON.pretty_generate(hash))
     end
   end
