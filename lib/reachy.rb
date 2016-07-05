@@ -44,10 +44,12 @@ module Reachy
           puts nil
           puts "View or update existing game scoreboard"
           self.view_game
+          self.game_menu
         when "2"
           puts nil
           puts "Add new game"
           self.add_game
+          self.game_menu
         when "3"
           puts nil
           puts "Delete existing game"
@@ -88,7 +90,7 @@ module Reachy
             puts nil
             @games[choice.to_i - 1].print_scoreboard
             puts nil
-            self.game_menu(choice.to_i - 1)
+            @selected_game_index = choice.to_i - 1
             return # to main menu
           else
             printf "Invalid choice: %s\n", choice
@@ -166,7 +168,7 @@ module Reachy
       @games << newgame
       puts "*** New game created! Scoreboard: "
       newgame.print_scoreboard
-      self.game_menu(@games.length - 1) # last entry is the new game
+      @selected_game_index = @games.length - 1 # last entry is the new game
     end
 
     # Delete a game. Main menu option 3.
@@ -190,28 +192,34 @@ module Reachy
             # Ask for confirmation
             chosen_game = @games[choice.to_i - 1]
             puts nil
-            printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
-            print "  Are you sure? (y/N) "
-            conf = gets.strip.downcase
-            if conf == "y"
-              # Move associated json file to trash.
-              filename = chosen_game.filename + ".json"
-              FileUtils.mv(File.expand_path("../../data/" + filename, __FILE__),
-                           File.expand_path("../../data/trash/" + filename, __FILE__))
-
-              # Delete from @games array
-              @games.delete(chosen_game)
-              printf "*** Game \"%s\" deleted from database.", chosen_game.filename
-            else
-              puts "You changed your mind? Fine."
-            end
-            puts nil
+            self.confirm_delete(chosen_game)
             return # to main menu
           else
             printf "Invalid choice: %s\n", choice
             puts nil
           end
         end
+      end
+    end
+
+    def confirm_delete(chosen_game)
+      puts nil
+      printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
+      print "  Are you sure? (y/N) "
+      conf = gets.strip.downcase
+      if conf == "y"
+        # Move associated json file to trash.
+        filename = chosen_game.filename + ".json"
+        FileUtils.mv(File.expand_path("../../data/" + filename, __FILE__),
+                     File.expand_path("../../data/trash/" + filename, __FILE__))
+
+        # Delete from @games array
+        @games.delete(chosen_game)
+        printf "*** Game \"%s\" deleted from database.\n\n", chosen_game.filename
+        return true
+      else
+        puts "You changed your mind? Fine.\n\n"
+        return false
       end
     end
 
@@ -223,11 +231,64 @@ module Reachy
       end
     end
 
-    # TODO: Game menu for a particular game (i.e. SUB)
-    def game_menu(index)
-      printf "TODO: THE GAME MENU (SUB) FOR THE GAME: "
-      @games[index].print_title
-      puts nil
+    # Game menu for a particular game
+    def game_menu
+      loop do
+        game = @games[@selected_game_index]
+        puts "(Enter \"x\" to go back to main menu.)"
+        puts nil
+        printf "*** Game \"%s\" Options:\n" \
+             "  1) Add next round result\n" \
+             "  2) Declare riichi\n" \
+             "  3) Remove last round entry\n" \
+             "  4) Delete current game\n" \
+             "  5) Choose a different game\n" \
+             "  6) Add new game\n", game.filename
+        print "---> Enter your choice: "
+        choice = gets.strip
+        case choice
+        when "x"
+          return # to main menu
+        when "1"
+          puts "\nAdd next round result"
+          self.add_round
+        when "2"
+          puts "\nDeclare riichi"
+          self.declare_riichi
+        when "3"
+          puts "\nRemove last round entry"
+          self.remove_last_round
+        when "4"
+          puts "\nDelete current game"
+          if self.confirm_delete(game) then return end # main menu if current game deleted
+        when "5"
+          puts "\nChoose a different game"
+          self.view_game
+        when "6"
+          puts "\nAdd new game"
+          self.add_game
+        when ""
+          puts "Enter a choice... >_>"
+          puts nil
+        else
+          printf "Invalid choice: %s\n", choice
+          puts nil
+        end
+      end
+    end
+
+    # Add a new round to the current game. Sub menu option 1.
+    def add_round
+      # FIXME: this adds a round after calculating score, but doesnt factor in riichi sticks.
+      # declare_riichi affects only the last round of the scoreboard.
+    end
+
+    # Update riichi sticks. Sub menu option 2.
+    def declare_riichi
+    end
+
+    # Remove last round from scoreboard. Sub menu option 3.
+    def remove_last_round
     end
 
     # Read all games in data dir, and store in @games array
