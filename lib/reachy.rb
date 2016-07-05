@@ -511,10 +511,17 @@ module Reachy
       end
     end
 
+    def cowsay
+      if system("which cowsay >/dev/null 2>&1")
+        system("cowsay Bye!")
+      end
+    end
+
     # Message to print when quitting program
     def goodbye
-      puts "\n\nGoodbye."
+      puts "\n\n"
       self.display_all_winners
+      self.cowsay
       abort
     end
   end
