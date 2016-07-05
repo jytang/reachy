@@ -16,10 +16,15 @@ class Game
   attr_reader   :players          # List of player names
   attr_accessor :scoreboard       # List of round records
 
-  # Initialize game
+  # Initialize game from given hash
   # Param: db - hash of game data
-  # Populate Game object with info from hash
   def initialize(db)
+    self.populate(db)
+  end
+
+  # Populate Game object with info from hash
+  # Param: db - hash of game data
+  def populate(db)
     @filename = db["filename"]
     @created_at = DateTime.parse(db["created_at"])
     @last_updated = DateTime.parse(db["last_updated"])
@@ -31,18 +36,29 @@ class Game
     end
   end
 
-  # Read JSON database file and delegate to initialize() to repopulate object
+  # Return Hash object representing Game object
+  def to_h
+    hash = self.instance_variables.each_with_object({}) \
+      { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+    hash["scoreboard"] = []
+    @scoreboard.each do |r|
+      hash["scoreboard"] << r.to_h
+    end
+    return hash
+  end
+
+  # Read JSON database file and repopulate object
   def read_data
     filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
     file = File.read(filepath)
     db = JSON.parse(file)
-    self.initialize(db)
+    self.populate(db)
   end
 
   # Write Game object to JSON database file
   def write_data
-    hash = self.instance_variables.each_with_object({}) \
-      { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+    @last_updated = DateTime.now
+    hash = self.to_h
     filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
     File.open(filepath, "w") do |f|
       f.write(JSON.pretty_generate(hash))
