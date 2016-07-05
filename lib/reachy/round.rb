@@ -32,6 +32,13 @@ class Round
     return Marshal.load(Marshal.dump(self))
   end
 
+  # Return Hash object representing Round object
+  def to_h
+    hash = self.instance_variables.each_with_object({}) \
+      { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+    return hash
+  end
+
   # Add riichi stick declared by player
   # Param: player - string of player's name
   # Return: true if successful, else false
@@ -48,6 +55,7 @@ class Round
   end
 
   # TODO: Update round data from given input
+  #       Handle tsumo/ron/tenpai
   # Param: dealer - string of dealer's name
   #        winner - string of winner's name
   #        hand   - hash of hand data (han, fu)
