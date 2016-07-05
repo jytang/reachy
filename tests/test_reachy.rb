@@ -1,4 +1,4 @@
-require_relative "../lib/reachy.rb"
+require_relative "../lib/reachy/game.rb"
 require "test/unit"
 
 class TestReachy < Test::Unit::TestCase
@@ -14,6 +14,7 @@ class TestReachy < Test::Unit::TestCase
                    "scoreboard" => [round1_hash, round2_hash] }
     g = Game.new(game_hash)
     g.write_data
+    g.print_scoreboard
     assert_equal(1+1, 2)
   end
 
