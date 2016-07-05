@@ -5,7 +5,6 @@ require 'date'
 require 'fileutils'
 
 require_relative 'reachy/game'
-require_relative 'reachy/round'
 
 ##############################################
 # Main driver functionality

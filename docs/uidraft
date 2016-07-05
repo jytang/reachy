@@ -133,8 +133,8 @@ ________________________________________
 
 ________________________________________
 
-[ SCENARIO SUB-1a: Option 1,2 - Tsumo/ron ]
--------------------------------------------
+[ SCENARIO SUB-1a: Option 1 - Tsumo ]
+-------------------------------------
 
 ---> Winner's name:
 
@@ -142,21 +142,32 @@ ________________________________________
 
 ________________________________________
 
-[ SCENARIO SUB-1b: Option 3 - Tenpai ]
+[ SCENARIO SUB-1b: Option 2 - Ron ]
+-----------------------------------
+
+---> Winner's name:
+
+---> Player who dealt into winning hand:
+
+---> Hand value (e.g. 4 han 50 fu):
+
+________________________________________
+
+[ SCENARIO SUB-1c: Option 3 - Tenpai ]
 --------------------------------------
 
 ---> Players in tenpai (separated by space):
 
 ________________________________________
 
-[ SCENARIO SUB-1c: Option 4 - Noten ]
+[ SCENARIO SUB-1d: Option 4 - Noten ]
 -------------------------------------
 
 <#nothing to display here>
 
 ________________________________________
 
-[ SCENARIO SUB-1d: Option 5 - Chombo]
+[ SCENARIO SUB-1e: Option 5 - Chombo]
 --------------------------------------
 
 ---> Player who chombo:

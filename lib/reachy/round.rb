@@ -1,4 +1,4 @@
-COL_SPACING = 15
+require_relative 'score'
 
 ##############################################
 # Round record class
@@ -42,7 +42,8 @@ class Round
   # Add riichi stick declared by player
   # Param: player - string of player's name
   # Return: true if successful, else false
-  # Note: round name should not be changed
+  # Note: - round name should not be changed
+  #       - do not write to file here
   def add_riichi(player)
     if @scores[player] >= 1000
       @riichi += 1
@@ -55,12 +56,43 @@ class Round
   end
 
   # TODO: Update round data from given input
-  #       Handle tsumo/ron/tenpai
-  # Param: dealer - string of dealer's name
-  #        winner - string of winner's name
-  #        hand   - hash of hand data (han, fu)
+  # Param: type   - round result type (tsumo/ron/tenpai/noten/chombo)
+  #        dealer - string of dealer's name
+  #        winner - list containing winner's name or players in tenpai
+  #        loser  - string of player who dealt into winning hand or chombo
+  #        hand   - list of hand value (e.g. ["mangan"], [2,60])
+  # Return: true if successful, else false
   # Usage: This round is a clone of previous round, so just update its values
-  def update_round(dealer, winner, hand)
+  # Note:
+  def update_round(type,dealer,winner,loser,hand)
+    # Verify inputs
+    if (dealer == nil)
+      puts "Error: Missing dealer's name"
+      return false
+    end
+    if (hand.empty? && type != T_CHOMBO && type != T_NOTEN)
+      puts "Error: Missing hand value"
+      return false
+    end
+
+    case type
+    # Tsumo type: loser = []
+    when T_TSUMO
+    # Ron type
+    when T_RON
+    # Tenpai type: loser = []
+    when T_TENPAI
+    # Noten type: winner = [], loser = [], hand = []
+    when T_NOTEN
+    # Chombo type: winner = [], hand = []
+    when T_CHOMBO
+    # Error case
+    else
+      printf "Invalid type: %s\n", type
+      puts nil
+      return false
+    end
+    return true
   end
 
   # Print single line round scores
