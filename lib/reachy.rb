@@ -78,7 +78,7 @@ module Reachy
         choice = gets.strip
         case choice
         when "x"
-          return
+          return # to main menu
         when ""
           puts "Enter a choice... >_>"
           puts nil
@@ -90,7 +90,7 @@ module Reachy
             @games[choice.to_i - 1].print_scoreboard
             puts nil
             self.game_menu(choice.to_i - 1)
-            break
+            return # to main menu
           else
             printf "Invalid choice: %s\n", choice
             puts nil
@@ -109,7 +109,7 @@ module Reachy
       until unique do
         print "---> Game name: "
         name = gets.strip
-        if name == "x" then return end
+        if name == "x" then return end # main menu
         unique = true
         @games.each do |game|
           if game.filename == name
@@ -125,7 +125,7 @@ module Reachy
       until good do
         print "---> Number of players (3 or 4): "
         nump = gets.strip
-        if nump == "x" then return end
+        if nump == "x" then return end # main menu
         nump = nump.to_i
         if nump == 3 or nump == 4
           good = true
@@ -139,7 +139,7 @@ module Reachy
       until good do
         print "---> Player names (separated by spaces): "
         players = gets.strip
-        if players == "x" then return end
+        if players == "x" then return end # main menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
           good = true
@@ -181,7 +181,7 @@ module Reachy
         choice = gets.strip
         case choice
         when "x"
-          return
+          return # to main menu
         when ""
           puts "Enter a choice... >_>"
           puts nil
@@ -207,7 +207,7 @@ module Reachy
               puts "You changed your mind? Fine."
             end
             puts nil
-            break
+            return # to main menu
           else
             printf "Invalid choice: %s\n", choice
             puts nil
@@ -224,9 +224,9 @@ module Reachy
       end
     end
 
-    # TODO: Game menu for a particular game
+    # TODO: Game menu for a particular game (i.e. SUB)
     def game_menu(index)
-      printf "TODO: THE GAME MENU FOR THE GAME: "
+      printf "TODO: THE GAME MENU (SUB) FOR THE GAME: "
       @games[index].print_title
       puts nil
     end
@@ -239,7 +239,6 @@ module Reachy
         next if filename == '.' or filename == '..' or filename == "trash"
 
         # Create game objects
-        # TODO: Use read_data here when it's fixed.
         file = File.read(File.expand_path("../../data/" + filename, __FILE__))
         db = JSON.parse(file)
         game = Game.new(db)
