@@ -1,4 +1,4 @@
-require_relative 'score'
+require_relative 'scoring'
 
 ##############################################
 # Round record class
@@ -95,7 +95,6 @@ class Round
   #        hand   - list of hand value (e.g. ["mangan"], [2,60])
   # Return: true if successful, else false
   # Usage: This round is a clone of previous round, so just update its values
-  # Note:
   def update_round(type,dealer,winner,loser,hand)
     # Verify inputs
     if (dealer == nil)
@@ -106,6 +105,8 @@ class Round
       puts "Error: Missing hand value"
       return false
     end
+
+    dealer_win = winner.include?(dealer)
 
     # Handle each round type
     case type
