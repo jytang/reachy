@@ -84,11 +84,12 @@ class Round
   #        loser  - list of players who pay for bonus points
   #        dealer - bool indicating whether winner was dealer
   # Return: true if successful, else false
-  # TODO: Handle score rounding!
   def award_bonus(winner,loser,dealer)
     if @scores.include?(winner)
       @scores[winner] += @bonus*Scoring::P_BONUS
-      bonus_paym = (@bonus*Scoring::P_BONUS)/loser.length
+      share_count = loser.length
+      if share_count>1 then share_count += (@mode==3 ? 1 : 0) end
+      bonus_paym = (@bonus*Scoring::P_BONUS)/share_count
       loser.each do |l|
         if @scores.include?(l)
           @scores[l] -= bonus_paym
@@ -122,8 +123,7 @@ class Round
       puts "Error: Missing dealer's name"
       return false
     end
-    if (hand.empty? || hand.first.empty?) &&
-        (type!=T_CHOMBO && type!=T_NOTEN && type!=T_TENPAI)
+    if (hand.empty? || hand.first.empty?) && (type==T_TSUMO || type==T_RON)
       puts "Error: Missing hand value"
       return false
     end
