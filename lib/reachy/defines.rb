@@ -8,9 +8,5 @@ T_TENPAI  = 3
 T_NOTEN   = 4
 T_CHOMBO  = 5
 
-# Bonus and riichi points
-P_BONUS   = 300
-P_RIICHI  = 1000
-
 # List of named hand values
 L_HANDS   = ["mangan","haneman","baiman","sanbaiman","yakuman"]

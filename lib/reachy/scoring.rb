@@ -7,6 +7,11 @@ require_relative 'scoretable'
 
 module Scoring
 
+  # Point constants
+  P_BONUS   = 300
+  P_RIICHI  = 1000
+  P_TENPAI  = 3000
+
   # Convert han, fu input to hash keys
   def Scoring.to_keys(han,fu)
     keys = []
@@ -36,11 +41,17 @@ module Scoring
   # Get Ron settlements
   # Param: dealer - bool indicating if dealer won
   #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
-  def Scoring.get_ron(han,fu,dealer)
+  def Scoring.get_ron(dealer,hand)
   end
 
   # Get Chombo settlements
+  # Param: dealer - bool indicating if dealer chombo
   def Scoring.get_chombo(dealer)
+    if dealer
+      return { "nondealer" => H_CHOMBO["dealer"] }
+    else
+      return H_CHOMBO["nondealer"]
+    end
   end
 
 end
