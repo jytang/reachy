@@ -45,12 +45,44 @@ class Round
   # Note: - round name should not be changed
   #       - do not write to file here
   def add_riichi(player)
-    if @scores[player] >= 1000
+    if @scores[player] >= P_RIICHI
       @riichi += 1
-      @scores[player] -= 1000
+      @scores[player] -= P_RIICHI
       return true
     else
       puts "Unable to declare riichi: not enough points"
+      return false
+    end
+  end
+
+  # Get next round from current round
+  # Return: list of [wind, round number] or [] if max West wind reached
+  def next_round
+    if @number == @mode
+      if @wind == "W"
+        printf "Already in max round (West %d)!\n", @number
+        return []
+      else
+        return [(@wind == "E" ? "S" : "W"), 1]
+      end
+    else
+      return [@wind, @number+1]
+    end
+  end
+
+  # Give bonus and riichi points to player
+  # Param: player - string of player's name to award points to
+  # Return: true if successful, else false
+  def award_bonus(player)
+    if @scores.include?(player)
+      @scores[player] += @bonus*P_BONUS
+      @bonus = 0
+      @scores[player] += @riichi*P_RIICHI
+      @riichi = 0
+      @name = self.next_round.join
+      return true
+    else
+      printf "Error: \"%s\" not in list of current players\n", player
       return false
     end
   end
@@ -75,23 +107,37 @@ class Round
       return false
     end
 
+    # Handle each round type
     case type
-    # Tsumo type: loser = []
+
     when T_TSUMO
-    # Ron type
+      # Tsumo type: loser = []
+      if not self.award_bonus(winner.first) then return false end
+      # TODO: update individual scores
+
     when T_RON
-    # Tenpai type: loser = []
+      # Ron type
+      if not self.award_bonus(winner.first) then return false end
+      # TODO: update individual scores
+
     when T_TENPAI
-    # Noten type: winner = [], loser = [], hand = []
+      # Tenpai type: loser = []
+      # TODO: update individual scores
+
     when T_NOTEN
-    # Chombo type: winner = [], hand = []
+      # Noten type: winner = [], loser = [], hand = []
+      @name = self.next_round.join + @name[2..-1]
+
     when T_CHOMBO
-    # Error case
+      # Chombo type: winner = [], hand = []
+      # TODO: update individual scores
+
     else
       printf "Invalid type: %s\n", type
       puts nil
       return false
     end
+
     return true
   end
 

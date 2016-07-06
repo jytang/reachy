@@ -188,13 +188,14 @@ class Score
 
   # Get Tsumo settlements
   # Param: dealer - bool indicating if dealer won
-  #        hand   - list of hand value (e.g. ["mangan"], [2,60])
+  #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
   def get_tsumo(dealer,hand)
+
   end
 
   # Get Ron settlements
   # Param: dealer - bool indicating if dealer won
-  #        hand   - list of hand value (e.g. ["mangan"], [2,60])
+  #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
   def get_ron(han,fu,dealer)
   end
 
