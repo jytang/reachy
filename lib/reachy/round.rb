@@ -83,7 +83,6 @@ class Round
       @bonus = 0
       @scores[winner] += @riichi*Scoring::P_RIICHI
       @riichi = 0
-      @name = self.next_round.join
       return true
     else
       printf "Error: \"%s\" and/or \"%s\" not in current list of players\n",
@@ -121,7 +120,28 @@ class Round
     when T_TSUMO
       # Tsumo type: loser = []
       if not self.award_bonus(winner.first) then return false end
-      # TODO: update individual scores
+      if dealer_flag
+        @bonus += 1
+        @name = @wind + @number.to_s + "B" + @bonus
+      else
+        @name = self.next_round.join
+      end
+      score_h = Scoring.get_tsumo(dealer_flag, hand.first)
+      @scores.each do |k,v|
+        if dealer_flag
+          if k == dealer
+            @scores[k] += score_h["nondealer"]*(@mode-1)
+          else
+            @scores[k] -= score_h["nondealer"]
+          end
+        else
+          if winner.include?(k)
+            @scores[k] += (score_h["dealer"] + score_h["nondealer"]*(@mode-2))
+          else
+            @scores[k] -= score_h[k==dealer ? "dealer" : "nondealer"]
+          end
+        end
+      end
 
     when T_RON
       # Ron type
@@ -131,9 +151,10 @@ class Round
     when T_TENPAI
       # Tenpai type: loser = []
       if winner.include?(dealer)
-        @name = self.next_round.join + @name[2..-1]
         @bonus += 1
         @name[3] = @bonus.to_s
+      else
+        @name = self.next_round.join + @name[2..-1]
       end
       if winner.length == @mode
         lose_count = 4 - winner.length

@@ -36,6 +36,17 @@ module Scoring
   # Param: dealer - bool indicating if dealer won
   #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
   def Scoring.get_tsumo(dealer,hand)
+    keys_h = if hand.first.instance_of?(String) then hand
+             else Scoring.to_keys(hand[0],hand[1]) end
+    if dealer
+      val = if keys_h[1] then H_TSUMO["dealer"][keys_h[0]][keys_h[1]]
+            else H_TSUMO["dealer"][keys_h[0]] end
+      return { "nondealer" => val }
+    else
+      val = if keys_h[1] then H_TSUMO["nondealer"][keys_h[0]][keys_h[1]]
+            else H_TSUMO["nondealer"][keys_h[0]] end
+      return val
+    end
   end
 
   # Get Ron settlements
