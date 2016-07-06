@@ -91,7 +91,7 @@ class Round
     end
   end
 
-  # TODO: Update round data from given input
+  # Update round data from given input
   # Param: type   - round result type (tsumo/ron/tenpai/noten/chombo)
   #        dealer - string of dealer's name
   #        winner - list containing winner's name or players in tenpai
@@ -126,6 +126,11 @@ class Round
       else
         @name = self.next_round.join
       end
+      # Hand validation: should be taken care of at input
+      #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
+      #  printf "\"%s\" is not a valid hand value!\n", hand.first
+      #  return false
+      #end
       score_h = Scoring.get_tsumo(dealer_flag, hand.first)
       @scores.each do |k,v|
         if dealer_flag
@@ -144,13 +149,23 @@ class Round
       end
 
     when T_RON
-      # Ron type
+      # Ron type - can have multiple winners off of same loser
       if not self.award_bonus(winner.first) then return false end
-      # TODO: update individual scores - beware of multiples
+      if dealer_flag
+        @bonus += 1
+        @name[3] = @bonus.to_s
+      else
+        @name = self.next_round.join + @name[2..-1]
+      end
+      winner.zip(hand).each do |w,h|
+        paym = Scoring.get_ron((w==dealer),h)
+        @scores[w] += paym
+        @scores[loser.first] -= paym
+      end
 
     when T_TENPAI
       # Tenpai type: loser = []
-      if winner.include?(dealer)
+      if dealer_flag
         @bonus += 1
         @name[3] = @bonus.to_s
       else

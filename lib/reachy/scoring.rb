@@ -2,7 +2,7 @@ require_relative 'defines'
 require_relative 'scoretable'
 
 ##############################################
-# TODO: Scoring module
+# Scoring module
 ##############################################
 
 module Scoring
@@ -13,6 +13,9 @@ module Scoring
   P_TENPAI  = 3000
 
   # Convert han, fu input to hash keys
+  # Param: han - fixnum of han's
+  #        fu  - fixnum of fu's
+  # Return: list of keys
   def Scoring.to_keys(han,fu)
     keys = []
     if ((han<3 && fu>70) || (han==3 && fu>60) || (han==4 && fu>30) || (han==5))
@@ -35,6 +38,7 @@ module Scoring
   # Get Tsumo settlements
   # Param: dealer - bool indicating if dealer won
   #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
+  # Return: hash of points
   def Scoring.get_tsumo(dealer,hand)
     keys_h = if hand.first.instance_of?(String) then hand
              else Scoring.to_keys(hand[0],hand[1]) end
@@ -52,11 +56,19 @@ module Scoring
   # Get Ron settlements
   # Param: dealer - bool indicating if dealer won
   #        hand   - list representing hand value (e.g. ["mangan"], [2,60])
+  # Return: fixnum of points
   def Scoring.get_ron(dealer,hand)
+    keys_h = if hand.first.instance_of?(String) then hand
+             else Scoring.to_keys(hand[0],hand[1]) end
+    val = if keys_h[1] then
+            H_RON[dealer ? "dealer" : "nondealer"][keys_h[0]][keys_h[1]]
+          else H_RON[dealer ? "dealer" : "nondealer"][keys_h[0]] end
+    return val
   end
 
   # Get Chombo settlements
   # Param: dealer - bool indicating if dealer chombo
+  # Return: hash of points
   def Scoring.get_chombo(dealer)
     if dealer
       return { "nondealer" => H_CHOMBO["dealer"] }
