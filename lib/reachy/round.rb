@@ -6,6 +6,7 @@ require_relative 'scoring'
 class Round
 
   attr_reader   :name           # Name of round (e.g. E1B2R1)
+  attr_reader   :mode           # Game mode
   attr_reader   :wind           # Round wind
   attr_reader   :number         # Round number
   attr_reader   :bonus          # Bonus sticks at beginning of round
@@ -24,6 +25,7 @@ class Round
     if @bonus > 0 then @name += "B" + @bonus.to_s end
     if @riichi > 0 then @name += "R" + @riichi.to_s end
     @scores = db["scores"]
+    @mode = @scores.length
   end
 
   # XXX: Need to be verified
@@ -36,6 +38,8 @@ class Round
   def to_h
     hash = self.instance_variables.each_with_object({}) \
       { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+    hash.delete("name")
+    hash.delete("mode")
     return hash
   end
 
@@ -58,7 +62,10 @@ class Round
   # Update wind and round number to next round
   # Return: list of [wind, round number] or [] if max West wind reached
   def next_round
-    if @number == @mode
+    if not @wind
+      @wind = "E"
+      @number = 1
+    elsif @number == @mode
       if @wind == "W"
         printf "Already in last possible round (West %d)!\n", @number
         return []
@@ -74,19 +81,27 @@ class Round
 
   # Give bonus and riichi points to player
   # Param: winner - string of player's name to award points to
-  #        loser  - string of player's name who pays for bonus points
+  #        loser  - list of players who pay for bonus points
+  #        dealer - bool indicating whether winner was dealer
   # Return: true if successful, else false
-  def award_bonus(winner,loser)
-    if @scores.include?(winner) && @scores.include?(loser)
+  # TODO: Handle score rounding!
+  def award_bonus(winner,loser,dealer)
+    if @scores.include?(winner)
       @scores[winner] += @bonus*Scoring::P_BONUS
-      @scores[loser] -= @bonus*Scoring::P_BONUS
-      @bonus = 0
+      bonus_paym = (@bonus*Scoring::P_BONUS)/loser.length
+      loser.each do |l|
+        if @scores.include?(l)
+          @scores[l] -= bonus_paym
+        else
+          printf "Error: \"%s\" not in current list of players\n", l
+        end
+      end
+      if not dealer then @bonus = 0 end
       @scores[winner] += @riichi*Scoring::P_RIICHI
       @riichi = 0
       return true
     else
-      printf "Error: \"%s\" and/or \"%s\" not in current list of players\n",
-        winner, loser
+      printf "Error: \"%s\" not in current list of players\n", winner
       return false
     end
   end
@@ -94,8 +109,8 @@ class Round
   # Update round data from given input
   # Param: type   - round result type (tsumo/ron/tenpai/noten/chombo)
   #        dealer - string of dealer's name
-  #        winner - list containing winner's name or players in tenpai
-  #        loser  - string of player who dealt into winning hand or chombo
+  #        winner - list of winner's name or players in tenpai
+  #        loser  - list of players who chombo or did not win
   #        hand   - list of list of hand values (e.g. [["mangan"], [2,60]])
   # Return: true if successful, else false
   # Usage: This round is a clone of previous round, so just update its values.
@@ -107,7 +122,8 @@ class Round
       puts "Error: Missing dealer's name"
       return false
     end
-    if ((hand.empty? || hand.first.empty?) && type!=T_CHOMBO && type!=T_NOTEN)
+    if (hand.empty? || hand.first.empty?) &&
+        (type!=T_CHOMBO && type!=T_NOTEN && type!=T_TENPAI)
       puts "Error: Missing hand value"
       return false
     end
@@ -118,11 +134,11 @@ class Round
     case type
 
     when T_TSUMO
-      # Tsumo type: loser = []
-      if not self.award_bonus(winner.first) then return false end
+      # Tsumo type: loser = everyone else
+      if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
-        @name = @wind + @number.to_s + "B" + @bonus
+        @name = @wind + @number.to_s + "B" + @bonus.to_s
       else
         @name = self.next_round.join
       end
@@ -132,25 +148,17 @@ class Round
       #  return false
       #end
       score_h = Scoring.get_tsumo(dealer_flag, hand.first)
-      @scores.each do |k,v|
-        if dealer_flag
-          if k == dealer
-            @scores[k] += score_h["nondealer"]*(@mode-1)
-          else
-            @scores[k] -= score_h["nondealer"]
-          end
-        else
-          if winner.include?(k)
-            @scores[k] += (score_h["dealer"] + score_h["nondealer"]*(@mode-2))
-          else
-            @scores[k] -= score_h[k==dealer ? "dealer" : "nondealer"]
-          end
-        end
+      @winner.each do |w|
+        @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
+                      else (score_h["dealer"]+score_h["nondealer"]*(@mode-2)) end
+      end
+      @loser.each do |l|
+        @scores[l] -= score_h[l==dealer ? "dealer" : "nondealer"]
       end
 
     when T_RON
       # Ron type - can have multiple winners off of same loser
-      if not self.award_bonus(winner.first) then return false end
+      if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
         @name[3] = @bonus.to_s
@@ -164,7 +172,7 @@ class Round
       end
 
     when T_TENPAI
-      # Tenpai type: loser = []
+      # Tenpai type: loser = noten folks
       if dealer_flag
         @bonus += 1
         @name[3] = @bonus.to_s
@@ -176,37 +184,26 @@ class Round
         paym = Scoring::P_TENPAI / lose_count
         recv = (Scoring::P_TENPAI * (@mode==4 ? lose_count : lose_count-1)) /
           winner.length
-        @scores.each do |k,v|
-          if winner.include?(k)
-            @scores[k] += recv
-          else
-            @scores[k] -= paym
-          end
+        winner.each do |w|
+          @scores[w] += recv
+        end
+        loser.each do |l|
+          @scores[l] -= paym
         end
       end
 
     when T_NOTEN
-      # Noten type: winner = [], loser = [], hand = []
+      # Noten type: ignore all other params
       @name = self.next_round.join + @name[2..-1]
 
     when T_CHOMBO
-      # Chombo type: winner = [], hand = []
+      # Chombo type: loser = chombo player, winner = everyone else
       dealer_flag = loser.include?(dealer)
       score_h = Scoring.get_chombo(dealer_flag)
-      @scores.each do |k,v|
-        if dealer_flag
-          if k != dealer
-            @scores[k] += score_h["nondealer"]
-          else
-            @scores[k] -= score_h["nondealer"]*(@mode-1)
-          end
-        else
-          if loser.include?(k)
-            @scores[k] -= (score_h["dealer"] + score_h["nondealer"]*(@mode-2))
-          else
-            @scores[k] += score_h[k==dealer ? "dealer" : "nondealer"]
-          end
-        end
+      @scores[loser.first] -= if dealer_flag then score_h["nondealer"]*(@mode-1)
+                              else (score_h["dealer"] + score_h["nondealer"]*(@mode-2)) end
+      winner.each do |w|
+        @scores[w] += score_h[w==dealer ? "dealer" : "nondealer"]
       end
 
     else
