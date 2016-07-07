@@ -65,6 +65,7 @@ class Game
     end
   end
 
+  # TODO: consider changing this function for easier usage
   # Add new round result
   # Param: round - hash of new round record
   # Append given round to scoreboard
