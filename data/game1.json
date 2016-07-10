@@ -1,9 +1,13 @@
 {
   "filename": "game1",
   "created_at": "2016-11-05T14:05:00-07:00",
-  "last_updated": "2016-11-05T14:55:00-07:00",
+  "last_updated": "2016-07-09T18:49:53-07:00",
   "mode": 3,
-  "players": [ "Joshua", "Kenta", "Thao" ],
+  "players": [
+    "Joshua",
+    "Kenta",
+    "Thao"
+  ],
   "scoreboard": [
     {
       "wind": null,
@@ -11,9 +15,9 @@
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "Joshua": 35000,
-        "Kenta": 35000,
-        "Thao": 35000
+        "joshua": 35000,
+        "kenta": 35000,
+        "thao": 35000
       }
     },
     {
@@ -22,9 +26,31 @@
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "Joshua": 33400,
-        "Kenta": 39800,
-        "Thao": 31800
+        "joshua": 33400,
+        "kenta": 39800,
+        "thao": 31800
+      }
+    },
+    {
+      "wind": "E",
+      "number": 1,
+      "bonus": 1,
+      "riichi": 0,
+      "scores": {
+        "joshua": 35400,
+        "kenta": 38800,
+        "thao": 30800
+      }
+    },
+    {
+      "wind": "E",
+      "number": 1,
+      "bonus": 2,
+      "riichi": 0,
+      "scores": {
+        "joshua": 43700,
+        "kenta": 34700,
+        "thao": 26700
       }
     }
   ]

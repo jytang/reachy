@@ -11,10 +11,10 @@
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "Joshua": 25000,
-        "Ken": 25000,
-        "Kenta": 25000,
-        "Thao": 25000
+        "joshua": 25000,
+        "ken": 25000,
+        "kenta": 25000,
+        "thao": 25000
       }
     },
     {
@@ -23,10 +23,10 @@
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "Joshua": 25000,
-        "Ken": 37000,
-        "Kenta": 13000,
-        "Thao": 25000
+        "joshua": 25000,
+        "ken": 37000,
+        "kenta": 13000,
+        "thao": 25000
       }
     },
     {
@@ -35,10 +35,10 @@
       "bonus": 1,
       "riichi": 2,
       "scores": {
-        "Joshua": 37300,
-        "Ken": 37000,
-        "Kenta": 700,
-        "Thao": 25000
+        "joshua": 37300,
+        "ken": 37000,
+        "kenta": 700,
+        "thao": 25000
       }
     },
     {
@@ -47,10 +47,10 @@
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "Joshua": 37300,
-        "Ken": 40900,
-        "Kenta": -3200,
-        "Thao": 25000
+        "joshua": 37300,
+        "ken": 40900,
+        "kenta": -3200,
+        "thao": 25000
       }
     }
   ]

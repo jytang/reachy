@@ -123,7 +123,7 @@ class Round
       puts "Error: Missing dealer's name"
       return false
     end
-    if (hand.empty? || hand.first.empty?) && (type==T_TSUMO || type==T_RON)
+    if (hand.empty?) && (type==T_TSUMO || type==T_RON)
       puts "Error: Missing hand value"
       return false
     end
@@ -135,7 +135,9 @@ class Round
 
     when T_TSUMO
       # Tsumo type: loser = everyone else
-      if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
+      losers = @scores.keys
+      losers -= winner
+      if not self.award_bonus(winner.first,losers,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
         @name = @wind + @number.to_s + "B" + @bonus.to_s
@@ -147,12 +149,12 @@ class Round
       #  printf "\"%s\" is not a valid hand value!\n", hand.first
       #  return false
       #end
-      score_h = Scoring.get_tsumo(dealer_flag, hand.first)
-      @winner.each do |w|
+      score_h = Scoring.get_tsumo(dealer_flag, hand)
+      winner.each do |w|
         @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
                       else (score_h["dealer"]+score_h["nondealer"]*(@mode-2)) end
       end
-      @loser.each do |l|
+      losers.each do |l|
         @scores[l] -= score_h[l==dealer ? "dealer" : "nondealer"]
       end
 

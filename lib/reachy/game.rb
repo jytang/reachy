@@ -67,10 +67,12 @@ class Game
 
   # TODO: consider changing this function for easier usage
   # Add new round result
-  # Param: round - hash of new round record
-  # Append given round to scoreboard
-  def add_round(round)
-    @scoreboard << round
+  def add_round(type, dealer, winner, loser, hand)
+    new_round = @scoreboard.last.clone
+
+    new_round.update_round(type, dealer, winner, loser, hand)
+
+    @scoreboard << new_round
     self.write_data
   end
 
@@ -84,7 +86,7 @@ class Game
   # Param: player - string of player's name
   # Return: true if successful, else false
   def add_riichi(player)
-    if @players.include? player
+    if @players.map(&:downcase).include? player
       return @scoreboard.last.add_riichi(player)
     else
       printf "Error: \"%s\" not in current game's players list\n", player
@@ -128,6 +130,11 @@ class Game
     printf "%s: %dP (%s) ~ %s ~ %s", @filename, @mode, @scoreboard.last.name,
       @players.join(", "), @last_updated
     puts nil
+  end
+
+  # Print last round sticks
+  def print_last_round_sticks
+    @scoreboard.last.print_sticks
   end
 
 end

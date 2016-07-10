@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'date'
 require 'fileutils'
+require 'io/console'
 
 require_relative 'reachy/game'
 
@@ -149,9 +150,9 @@ module Reachy
         end
       end
 
-      # Make initial scoreboard e.g. { "Joshua" => 35000, "Kenta" => 35000, "Thao" => 35000 }
+      # Make initial scoreboard e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
       start_score = nump == 3 ? 35000 : 25000
-      init_scoreboard = Hash[ *players.collect { |p| [p, start_score] }.flatten]
+      init_scoreboard = Hash[ *players.collect { |p| [p.downcase, start_score] }.flatten]
       # Make new game object (TODO: do less hard coding)
       init_round = {"wind" => nil, "number" => 0, "bonus" => 0, "riichi" => 0, "scores" => init_scoreboard}
       now_stamp = DateTime.now.to_s
@@ -232,6 +233,7 @@ module Reachy
     end
 
     # Game menu for a particular game
+    # TODO: support EOF in sub-menu
     def game_menu
       loop do
         game = @games[@selected_game_index]
@@ -240,10 +242,11 @@ module Reachy
         printf "*** Game \"%s\" Options:\n" \
              "  1) Add next round result\n" \
              "  2) Declare riichi\n" \
-             "  3) Remove last round entry\n" \
-             "  4) Delete current game\n" \
-             "  5) Choose a different game\n" \
-             "  6) Add new game\n", game.filename
+             "  3) View current scoreboard\n" \
+             "  4) Remove last round entry\n" \
+             "  5) Delete current game\n" \
+             "  6) Choose a different game\n" \
+             "  7) Add new game\n", game.filename
         print "---> Enter your choice: "
         choice = gets.strip
         case choice
@@ -251,20 +254,25 @@ module Reachy
           return # to main menu
         when "1"
           puts "\nAdd next round result"
-          self.add_round
+          self.add_round(game)
         when "2"
           puts "\nDeclare riichi"
-          self.declare_riichi
+          self.declare_riichi(game)
         when "3"
-          puts "\nRemove last round entry"
-          self.remove_last_round
+          puts "\nView current scoreboard"
+          game.print_scoreboard
+          puts "\n(Press any key to continue)"
+          STDIN.getch
         when "4"
+          puts "\nRemove last round entry"
+          self.remove_last_round(game)
+        when "5"
           puts "\nDelete current game"
           if self.confirm_delete(game) then return end # main menu if current game deleted
-        when "5"
+        when "6"
           puts "\nChoose a different game"
           self.view_game
-        when "6"
+        when "7"
           puts "\nAdd new game"
           self.add_game
         when ""
@@ -278,17 +286,101 @@ module Reachy
     end
 
     # Add a new round to the current game. Sub menu option 1.
-    def add_round
-      # FIXME: this adds a round after calculating score, but doesnt factor in riichi sticks.
-      # declare_riichi affects only the last round of the scoreboard.
+    def add_round(game)
+        puts "(Enter \"x\" to return to game options.)"
+        puts nil
+        print "---> Dealer's name: "
+        dealer = gets.strip.downcase
+        if dealer == "x" then return end
+
+        loop do
+          printf "*** Round result type:\n" \
+                 "  1) Tsumo\n" \
+                 "  2) Ron\n" \
+                 "  3) Tenpai\n" \
+                 "  4) Noten\n" \
+                 "  5) Chombo\n"
+          print "---> Select round result: "
+          choice = gets.strip
+          case choice
+          when "x"
+            return
+          when "1"
+            # Tsumo
+            print "---> Winner's name: "
+            winner = gets.strip.downcase
+            if winner == "x" then next end
+            winner = [winner]
+            puts nil
+            print "---> Hand value (e.g. 2 han 30 fu, or mangan): "
+            hand = gets.strip
+            if hand == "x" then next end
+            if hand.split.length == 1 # e.g. "mangan"
+              hand = [hand]
+            else
+              hand = [0,2].map{ |i| hand.split[i].to_i} # results in [ hand[0], hand[2] ]
+            end
+            type = T_TSUMO
+            loser = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when "2"
+            # Ron
+          when "3"
+            # Tenpai
+          when "4"
+            # Noten
+          when "5"
+            # Chombo
+          when ""
+            puts "Enter a choice... >_>"
+            puts nil
+          else
+            printf "Invalid choice: %s\n", choice
+            puts nil
+          end
+        end
+
+        puts "*** Game scoreboard updated."
+        game.print_scoreboard
     end
 
     # Update riichi sticks. Sub menu option 2.
-    def declare_riichi
+    # TODO: EOF support here
+    # Known bug: changes score of LAST round as well.
+    # Proposed solution: add Round object for the current round before it is finished.
+    #   i.e. game init should create two rounds "0" and "E1"
+    #   then declare_riichi, add_round would simply update E1
+    #   add_round would afterwards clone the round and append to scoreboard (as the NEXT round)
+    def declare_riichi(game)
+      puts "(Enter \"x\" to return to game options.)"
+      puts nil
+      print "Player who declared riichi: "
+      player = gets.strip.downcase
+      if player == "x" then return end
+
+      if game.add_riichi(player)
+        printf "\n*** Riichi stick added for %s.\n", pname
+        game.print_last_round_sticks
+      end
     end
 
     # Remove last round from scoreboard. Sub menu option 3.
-    def remove_last_round
+    def remove_last_round(game)
+      puts nil
+      printf "---> Removing last round entry:\n"
+      game.print_last_round
+      print "  Are you sure? (y/N) "
+      conf = gets.strip.downcase
+      if conf == "y"
+        game.remove_last_round
+        printf "*** Game scoreboard updated."
+        game.print_scoreboard
+        return true
+      else
+        puts "You changed your mind? Fine.\n\n"
+        return false
+      end
     end
 
     # Read all games in data dir, and store in @games array
