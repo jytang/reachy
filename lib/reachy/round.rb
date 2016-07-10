@@ -123,7 +123,7 @@ class Round
       puts "Error: Missing dealer's name"
       return false
     end
-    if (hand.empty?) && (type==T_TSUMO || type==T_RON)
+    if (hand.empty? || hand.first.empty?) && (type==T_TSUMO || type==T_RON)
       puts "Error: Missing hand value"
       return false
     end
@@ -149,7 +149,7 @@ class Round
       #  printf "\"%s\" is not a valid hand value!\n", hand.first
       #  return false
       #end
-      score_h = Scoring.get_tsumo(dealer_flag, hand)
+      score_h = Scoring.get_tsumo(dealer_flag, hand.first)
       winner.each do |w|
         @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
                       else (score_h["dealer"]+score_h["nondealer"]*(@mode-2)) end
@@ -174,7 +174,10 @@ class Round
       end
 
     when T_TENPAI
-      # Tenpai type: loser = noten folks
+      # Tenpai type: losers = all - winners
+      losers = @scores.keys
+      losers -= winner
+
       if dealer_flag
         @bonus += 1
         @name[3] = @bonus.to_s
@@ -189,7 +192,7 @@ class Round
         winner.each do |w|
           @scores[w] += recv
         end
-        loser.each do |l|
+        losers.each do |l|
           @scores[l] -= paym
         end
       end
@@ -200,11 +203,14 @@ class Round
 
     when T_CHOMBO
       # Chombo type: loser = chombo player, winner = everyone else
+      winners = @scores.keys
+      winners -= loser
+
       dealer_flag = loser.include?(dealer)
       score_h = Scoring.get_chombo(dealer_flag)
       @scores[loser.first] -= if dealer_flag then score_h["nondealer"]*(@mode-1)
                               else (score_h["dealer"] + score_h["nondealer"]*(@mode-2)) end
-      winner.each do |w|
+      winners.each do |w|
         @scores[w] += score_h[w==dealer ? "dealer" : "nondealer"]
       end
 

@@ -307,31 +307,82 @@ module Reachy
             return
           when "1"
             # Tsumo
+            type = T_TSUMO
             print "---> Winner's name: "
             winner = gets.strip.downcase
             if winner == "x" then next end
             winner = [winner]
             puts nil
-            print "---> Hand value (e.g. 2 han 30 fu, or mangan): "
+            puts nil
+            print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
             if hand == "x" then next end
-            if hand.split.length == 1 # e.g. "mangan"
-              hand = [hand]
-            else
-              hand = [0,2].map{ |i| hand.split[i].to_i} # results in [ hand[0], hand[2] ]
-            end
-            type = T_TSUMO
-            loser = []
+            # Only convert to integer if it is a number (^\d+$)
+            # Result: [ [2, 30] ] or [ ["mangan"] ]
+            hand = [hand.split.map{|num| num.to_i if num.match(/^\d+$/)}]
+            loser = []  # Round::update_round will set loser = all - winner
             game.add_round(type, dealer, winner, loser, hand)
             break
           when "2"
             # Ron
+            type = T_RON
+            print "---> Winner(s): "
+            winner = gets.strip.downcase
+            if winner == "x" then next end
+            winner = winner.split
+            puts nil
+            print "---> Player who dealt into winning hand(s): "
+            loser = gets.strip.downcase
+            if loser == "x" then next end
+            loser = [loser]
+            puts nil
+            print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+            hand = gets.strip
+            if hand == "x" then next end
+
+            # Two consecutive numbers constitute a hand, otherwise a named hand
+            split_hand = hand.split
+            hand = []
+            i = 0
+            while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
+              if split_hand[i].match(/^\d+$/)
+                hand << [split_hand[i], split_hand[i+1]]
+                i += 2
+              else
+                hand << [split_hand[i]]
+                i += 1
+            game.add_round(type, dealer, winner, loser, hand)
+            break
           when "3"
             # Tenpai
+            type = T_TENPAI
+            print "---> Player(s) in tenpai (separated by space): "
+            winner = gets.strip.downcase
+            if winner == "x" then next end
+            winner = winner.split
+            loser = []  # Round::update_round will set losers = all - winners
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
           when "4"
             # Noten
+            type = T_NOTEN
+            winner = []
+            loser = []
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
           when "5"
             # Chombo
+            type = T_CHOMBO
+            print "---> Player who chombo'd: "
+            loser = gets.strip.downcase
+            if loser == "x" then next end
+            loser = [loser]
+            winner = [] # Round::update_round will set winners = all - loser
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
           when ""
             puts "Enter a choice... >_>"
             puts nil
