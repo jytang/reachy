@@ -413,7 +413,7 @@ module Reachy
       if player == "x" then return end
 
       if game.add_riichi(player)
-        printf "\n*** Riichi stick added for %s.\n", pname
+        printf "\n*** Riichi stick added for %s.\n", player
         game.print_last_round_sticks
       end
     end
