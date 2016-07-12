@@ -60,7 +60,6 @@ class Round
   end
 
   # Update wind and round number to next round
-  # Return: list of [wind, round number] or [] if max West wind reached
   def next_round
     if not @wind
       @wind = "E"
@@ -76,7 +75,6 @@ class Round
     else
       @number += 1
     end
-    return [@wind, @number]
   end
 
   # Give bonus and riichi points to player
@@ -105,6 +103,13 @@ class Round
       printf "Error: \"%s\" not in current list of players\n", winner
       return false
     end
+  end
+
+  # Update round name
+  def update_name
+    @name = @wind ? (@wind + @number.to_s) : "0"
+    if @bonus > 0 then @name += "B" + @bonus.to_s end
+    if @riichi > 0 then @name += "R" + @riichi.to_s end
   end
 
   # Update round data from given input
@@ -140,10 +145,10 @@ class Round
       if not self.award_bonus(winner.first,losers,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
-        @name = @wind + @number.to_s + "B" + @bonus.to_s
       else
-        @name = self.next_round.join
+        self.next_round
       end
+      self.update_name
       # Hand validation: should be taken care of at input
       #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
       #  printf "\"%s\" is not a valid hand value!\n", hand.first
@@ -163,10 +168,10 @@ class Round
       if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
-        @name[3] = @bonus.to_s
       else
-        @name = self.next_round.join + @name[2..-1]
+        self.next_round
       end
+      self.update_name
       winner.zip(hand).each do |w,h|
         paym = Scoring.get_ron((w==dealer),h)
         @scores[w] += paym
@@ -177,18 +182,18 @@ class Round
       # Tenpai type: losers = all - winners
       losers = @scores.keys
       losers -= winner
-
-      if dealer_flag
-        @bonus += 1
-        @name[3] = @bonus.to_s
-      else
-        @name = self.next_round.join + @name[2..-1]
-      end
-      if winner.length == @mode
+      self.update_name
+      if winner.length < @mode
+        # TODO: Fix this naming
+        if @name == "0" then self.next_round end
+        self.update_name
+        if dealer_flag then @bonus += 1 end
+        if not dealer_flag
+          self.next_round
+        end
         lose_count = 4 - winner.length
         paym = Scoring::P_TENPAI / lose_count
-        recv = (Scoring::P_TENPAI * (@mode==4 ? lose_count : lose_count-1)) /
-          winner.length
+        recv = (paym * (@mode==4? lose_count : lose_count-1)) / winner.length
         winner.each do |w|
           @scores[w] += recv
         end
@@ -199,7 +204,8 @@ class Round
 
     when T_NOTEN
       # Noten type: ignore all other params
-      @name = self.next_round.join + @name[2..-1]
+      self.next_round
+      self.update_name
 
     when T_CHOMBO
       # Chombo type: loser = chombo player, winner = everyone else
@@ -236,6 +242,7 @@ class Round
   def print_sticks
     printf "  %-#{COL_SPACING}s: %d\n", "Bonus sticks", @bonus
     printf "  %-#{COL_SPACING}s: %d\n", "Riichi sticks", @riichi
+    puts nil
   end
 
 end

@@ -42,30 +42,30 @@ module Reachy
         choice = gets.strip
         case choice
         when "1"
+          puts "\n[View or update existing game scoreboard]"
           puts nil
-          puts "View or update existing game scoreboard"
           if self.view_game
             self.game_menu
           end
         when "2"
+          puts "\n[Add new game]"
           puts nil
-          puts "Add new game"
           if self.add_game
             self.game_menu
           end
         when "3"
+          puts "\n[Delete existing game]"
           puts nil
-          puts "Delete existing game"
           self.delete_game
         when "4"
+          puts "\n[Display all scoreboards]"
           puts nil
-          puts "Display all scoreboards"
           self.display_all_scoreboards
         when ""
-          puts "Enter a choice... >_>"
+          puts "\nEnter a choice... >_>"
           puts nil
         else
-          printf "Invalid choice: %s\n", choice
+          printf "\nInvalid choice: %s\n", choice
           puts nil
         end
       end
@@ -80,6 +80,7 @@ module Reachy
         self.display_all_games
         print "---> Enter your choice: "
         choice = gets.strip
+        puts nil
         case choice
         when "x"
           return false # to main menu
@@ -90,9 +91,7 @@ module Reachy
           # Check that choice consists only of digits and within @games bounds
           if /\A\d+\z/.match(choice) and choice.to_i <= @games.length and choice.to_i > 0
             # Print scoreboard for this game
-            puts nil
             @games[choice.to_i - 1].print_scoreboard
-            puts nil
             @selected_game_index = choice.to_i - 1
             return true # to main menu
           else
@@ -169,8 +168,10 @@ module Reachy
 
       # Add to @games array and go to its menu.
       @games << newgame
-      puts "*** New game created! Scoreboard: "
+      puts "*** New game created! Scoreboard:"
+      puts nil
       newgame.print_scoreboard
+      puts nil
       @selected_game_index = @games.length - 1 # last entry is the new game
       return true
     end
@@ -188,8 +189,7 @@ module Reachy
         when "x"
           return # to main menu
         when ""
-          puts "Enter a choice... >_>"
-          puts nil
+          puts "\nEnter a choice... >_>"
         else
           # Check that choice consists only of digits and within @games bounds
           if /\A\d+\z/.match(choice) and choice.to_i <= @games.length and choice.to_i > 0
@@ -207,7 +207,6 @@ module Reachy
     end
 
     def confirm_delete(chosen_game)
-      puts nil
       printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
       print "  Are you sure? (y/N) "
       conf = gets.strip.downcase
@@ -231,7 +230,6 @@ module Reachy
     def display_all_scoreboards
       @games.each do |game|
         game.print_scoreboard
-        puts nil
       end
     end
 
@@ -240,7 +238,7 @@ module Reachy
     def game_menu
       loop do
         game = @games[@selected_game_index]
-        puts "(Enter \"x\" to go back to main menu.)"
+        puts "(Enter \"x\" to go back to main menu.)\n"
         puts nil
         printf "*** Game \"%s\" Options:\n" \
              "  1) Add next round result\n" \
@@ -254,38 +252,79 @@ module Reachy
         choice = gets.strip
         case choice
         when "x"
+          puts nil
           return # to main menu
         when "1"
-          puts "\nAdd next round result"
+          puts "\n[Add next round result]"
+          puts nil
           self.add_round(game)
         when "2"
-          puts "\nDeclare riichi"
+          puts "\n[Declare riichi]"
+          puts nil
           self.declare_riichi(game)
         when "3"
-          puts "\nView current scoreboard"
+          puts "\n[View current scoreboard]"
+          puts nil
           game.print_scoreboard
           puts "\n(Press any key to continue)"
           STDIN.getch
         when "4"
-          puts "\nRemove last round entry"
+          puts "\n[Remove last round entry]"
+          puts nil
           self.remove_last_round(game)
         when "5"
-          puts "\nDelete current game"
+          puts "\n[Delete current game]"
+          puts nil
           if self.confirm_delete(game) then return end # main menu if current game deleted
         when "6"
-          puts "\nChoose a different game"
+          puts "\n[Choose a different game]"
+          puts nil
           self.view_game
         when "7"
-          puts "\nAdd new game"
+          puts "\n[Add new game]"
+          puts nil
           self.add_game
         when ""
-          puts "Enter a choice... >_>"
+          puts "\nEnter a choice... >_>"
           puts nil
         else
-          printf "Invalid choice: %s\n", choice
+          printf "\nInvalid choice: %s\n", choice
           puts nil
         end
       end
+    end
+
+    # Validate hand input
+    # Param: hand - string of hand value input
+    # Return: reformated hand value or empty list if input invalid
+    def validate_hand(hand)
+      split_hand = hand.split
+      hand = []
+      i = 0
+      flag = true
+      while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
+        if split_hand[i].match(/^\d+$/)
+          if split_hand[i+1].match(/^\d+$/)
+            hand << [split_hand[i].to_i, split_hand[i+1].to_i]
+            i += 2
+          else
+            flag = false
+            hand = []
+            break
+          end
+        elsif L_HANDS.include?(split_hand[i])
+          hand << [split_hand[i]]
+          i += 1
+        else
+          flag = false
+          hand = []
+          break
+        end
+      end
+      if not flag
+        printf "Hand value malformed: \"%s\"\n", hand
+      end
+      return hand
     end
 
     # Add a new round to the current game. Sub menu option 1.
@@ -295,6 +334,7 @@ module Reachy
         print "---> Dealer's name: "
         dealer = gets.strip.downcase
         if dealer == "x" then return end
+        puts nil
 
         loop do
           printf "*** Round result type:\n" \
@@ -307,6 +347,7 @@ module Reachy
           choice = gets.strip
           case choice
           when "x"
+            puts nil
             return
           when "1"
             # Tsumo
@@ -315,48 +356,31 @@ module Reachy
             winner = gets.strip.downcase
             if winner == "x" then next end
             winner = [winner]
-            puts nil
-            puts nil
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
             if hand == "x" then next end
-            # Only convert to integer if it is a number (^\d+$)
-            # Result: [ [2, 30] ] or [ ["mangan"] ]
-            hand = [hand.split.map{|num| num.to_i if num.match(/^\d+$/)}]
+            hand = self.validate_hand(hand)
             loser = []  # Round::update_round will set loser = all - winner
             game.add_round(type, dealer, winner, loser, hand)
             break
           when "2"
             # Ron
             type = T_RON
+            puts nil
             print "---> Winner(s): "
             winner = gets.strip.downcase
             if winner == "x" then next end
             winner = winner.split
-            puts nil
             print "---> Player who dealt into winning hand(s): "
             loser = gets.strip.downcase
             if loser == "x" then next end
             loser = [loser]
             # TODO: check that loser isn't a winner.
-            puts nil
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
+            puts nil
             if hand == "x" then next end
-
-            # Two consecutive numbers constitute a hand, otherwise a named hand
-            split_hand = hand.split
-            hand = []
-            i = 0
-            while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
-              if split_hand[i].match(/^\d+$/)
-                hand << [split_hand[i].to_i, split_hand[i+1].to_i]
-                i += 2
-              else
-                hand << [split_hand[i]]
-                i += 1
-              end
-            end
+            hand = self.validate_hand(hand)
             game.add_round(type, dealer, winner, loser, hand)
             break
           when "3"
@@ -412,12 +436,12 @@ module Reachy
     def declare_riichi(game)
       puts "(Enter \"x\" to return to game options.)"
       puts nil
-      print "Player who declared riichi: "
+      print "---> Player who declared riichi: "
       player = gets.strip.downcase
       if player == "x" then return end
 
       if game.add_riichi(player)
-        printf "\n*** Riichi stick added for %s.\n", player
+        printf "\n*** Riichi stick added by %s.\n", player
         game.print_last_round_sticks
       end
     end
@@ -431,7 +455,9 @@ module Reachy
       conf = gets.strip.downcase
       if conf == "y"
         game.remove_last_round
-        printf "*** Game scoreboard updated."
+        puts nil
+        puts "*** Game scoreboard updated."
+        puts nil
         game.print_scoreboard
         return true
       else

@@ -78,8 +78,13 @@ class Game
 
   # Remove latest round from scoreboard
   def remove_last_round
-    @scoreboard.pop
-    self.write_data
+    if @scoreboard.length > 1
+      @scoreboard.pop
+      self.write_data
+    else
+      printf "Error: Current game already in initial state. " \
+        "No round deleted.\n"
+    end
   end
 
   # Add riichi stick declared by player
@@ -114,6 +119,7 @@ class Game
     @scoreboard.each do |r|
       r.print_scores
     end
+    puts nil
   end
 
   # Print last round scores
