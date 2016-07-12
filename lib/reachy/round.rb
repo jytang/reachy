@@ -60,7 +60,6 @@ class Round
   end
 
   # Update wind and round number to next round
-  # Return: list of [wind, round number] or [] if max West wind reached
   def next_round
     if not @wind
       @wind = "E"
@@ -76,7 +75,6 @@ class Round
     else
       @number += 1
     end
-    return [@wind, @number]
   end
 
   # Give bonus and riichi points to player
@@ -107,6 +105,13 @@ class Round
     end
   end
 
+  # Update round name
+  def update_name
+    @name = @wind ? (@wind + @number.to_s) : "0"
+    if @bonus > 0 then @name += "B" + @bonus.to_s end
+    if @riichi > 0 then @name += "R" + @riichi.to_s end
+  end
+
   # Update round data from given input
   # Param: type   - round result type (tsumo/ron/tenpai/noten/chombo)
   #        dealer - string of dealer's name
@@ -135,24 +140,26 @@ class Round
 
     when T_TSUMO
       # Tsumo type: loser = everyone else
-      if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
+      losers = @scores.keys
+      losers -= winner
+      if not self.award_bonus(winner.first,losers,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
-        @name = @wind + @number.to_s + "B" + @bonus.to_s
       else
-        @name = self.next_round.join
+        self.next_round
       end
+      self.update_name
       # Hand validation: should be taken care of at input
       #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
       #  printf "\"%s\" is not a valid hand value!\n", hand.first
       #  return false
       #end
       score_h = Scoring.get_tsumo(dealer_flag, hand.first)
-      @winner.each do |w|
+      winner.each do |w|
         @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
                       else (score_h["dealer"]+score_h["nondealer"]*(@mode-2)) end
       end
-      @loser.each do |l|
+      losers.each do |l|
         @scores[l] -= score_h[l==dealer ? "dealer" : "nondealer"]
       end
 
@@ -161,10 +168,10 @@ class Round
       if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
       if dealer_flag
         @bonus += 1
-        @name[3] = @bonus.to_s
       else
-        @name = self.next_round.join + @name[2..-1]
+        self.next_round
       end
+      self.update_name
       winner.zip(hand).each do |w,h|
         paym = Scoring.get_ron((w==dealer),h)
         @scores[w] += paym
@@ -172,37 +179,44 @@ class Round
       end
 
     when T_TENPAI
-      # Tenpai type: loser = noten folks
-      if dealer_flag
-        @bonus += 1
-        @name[3] = @bonus.to_s
-      else
-        @name = self.next_round.join + @name[2..-1]
-      end
-      if winner.length == @mode
+      # Tenpai type: losers = all - winners
+      losers = @scores.keys
+      losers -= winner
+      self.update_name
+      if winner.length < @mode
+        # TODO: Fix this naming
+        if @name == "0" then self.next_round end
+        self.update_name
+        if dealer_flag then @bonus += 1 end
+        if not dealer_flag
+          self.next_round
+        end
         lose_count = 4 - winner.length
         paym = Scoring::P_TENPAI / lose_count
-        recv = (Scoring::P_TENPAI * (@mode==4 ? lose_count : lose_count-1)) /
-          winner.length
+        recv = (paym * (@mode==4? lose_count : lose_count-1)) / winner.length
         winner.each do |w|
           @scores[w] += recv
         end
-        loser.each do |l|
+        losers.each do |l|
           @scores[l] -= paym
         end
       end
 
     when T_NOTEN
       # Noten type: ignore all other params
-      @name = self.next_round.join + @name[2..-1]
+      self.next_round
+      self.update_name
 
     when T_CHOMBO
       # Chombo type: loser = chombo player, winner = everyone else
+      winners = @scores.keys
+      winners -= loser
+
       dealer_flag = loser.include?(dealer)
       score_h = Scoring.get_chombo(dealer_flag)
       @scores[loser.first] -= if dealer_flag then score_h["nondealer"]*(@mode-1)
                               else (score_h["dealer"] + score_h["nondealer"]*(@mode-2)) end
-      winner.each do |w|
+      winners.each do |w|
         @scores[w] += score_h[w==dealer ? "dealer" : "nondealer"]
       end
 
@@ -228,6 +242,7 @@ class Round
   def print_sticks
     printf "  %-#{COL_SPACING}s: %d\n", "Bonus sticks", @bonus
     printf "  %-#{COL_SPACING}s: %d\n", "Riichi sticks", @riichi
+    puts nil
   end
 
 end

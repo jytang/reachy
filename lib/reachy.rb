@@ -3,6 +3,7 @@
 require 'rubygems'
 require 'date'
 require 'fileutils'
+require 'io/console'
 
 require_relative 'reachy/game'
 
@@ -41,26 +42,30 @@ module Reachy
         choice = gets.strip
         case choice
         when "1"
+          puts "\n[View or update existing game scoreboard]"
           puts nil
-          puts "View or update existing game scoreboard"
-          self.view_game
+          if self.view_game
+            self.game_menu
+          end
         when "2"
+          puts "\n[Add new game]"
           puts nil
-          puts "Add new game"
-          self.add_game
+          if self.add_game
+            self.game_menu
+          end
         when "3"
+          puts "\n[Delete existing game]"
           puts nil
-          puts "Delete existing game"
           self.delete_game
         when "4"
+          puts "\n[Display all scoreboards]"
           puts nil
-          puts "Display all scoreboards"
           self.display_all_scoreboards
         when ""
-          puts "Enter a choice... >_>"
+          puts "\nEnter a choice... >_>"
           puts nil
         else
-          printf "Invalid choice: %s\n", choice
+          printf "\nInvalid choice: %s\n", choice
           puts nil
         end
       end
@@ -75,9 +80,10 @@ module Reachy
         self.display_all_games
         print "---> Enter your choice: "
         choice = gets.strip
+        puts nil
         case choice
         when "x"
-          return # to main menu
+          return false # to main menu
         when ""
           puts "Enter a choice... >_>"
           puts nil
@@ -85,11 +91,9 @@ module Reachy
           # Check that choice consists only of digits and within @games bounds
           if /\A\d+\z/.match(choice) and choice.to_i <= @games.length and choice.to_i > 0
             # Print scoreboard for this game
-            puts nil
             @games[choice.to_i - 1].print_scoreboard
-            puts nil
-            self.game_menu(choice.to_i - 1)
-            return # to main menu
+            @selected_game_index = choice.to_i - 1
+            return true # to main menu
           else
             printf "Invalid choice: %s\n", choice
             puts nil
@@ -108,7 +112,7 @@ module Reachy
       until unique do
         print "---> Game name: "
         name = gets.strip
-        if name == "x" then return end # main menu
+        if name == "x" then return false end # main menu
         unique = true
         @games.each do |game|
           if game.filename == name
@@ -124,7 +128,7 @@ module Reachy
       until good do
         print "---> Number of players (3 or 4): "
         nump = gets.strip
-        if nump == "x" then return end # main menu
+        if nump == "x" then return false end # main menu
         nump = nump.to_i
         if nump == 3 or nump == 4
           good = true
@@ -138,7 +142,7 @@ module Reachy
       until good do
         print "---> Player names (separated by spaces): "
         players = gets.strip
-        if players == "x" then return end # main menu
+        if players == "x" then return false end # main menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
           good = true
@@ -147,9 +151,9 @@ module Reachy
         end
       end
 
-      # Make initial scoreboard e.g. { "Joshua" => 35000, "Kenta" => 35000, "Thao" => 35000 }
+      # Make initial scoreboard e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
       start_score = nump == 3 ? 35000 : 25000
-      init_scoreboard = Hash[ *players.collect { |p| [p, start_score] }.flatten]
+      init_scoreboard = Hash[ *players.collect { |p| [p.downcase, start_score] }.flatten]
       # Make new game object (TODO: do less hard coding)
       init_round = {"wind" => nil, "number" => 0, "bonus" => 0, "riichi" => 0, "scores" => init_scoreboard}
       now_stamp = DateTime.now.to_s
@@ -164,9 +168,12 @@ module Reachy
 
       # Add to @games array and go to its menu.
       @games << newgame
-      puts "*** New game created! Scoreboard: "
+      puts "*** New game created! Scoreboard:"
+      puts nil
       newgame.print_scoreboard
-      self.game_menu(@games.length - 1) # last entry is the new game
+      puts nil
+      @selected_game_index = @games.length - 1 # last entry is the new game
+      return true
     end
 
     # Delete a game. Main menu option 3.
@@ -182,30 +189,14 @@ module Reachy
         when "x"
           return # to main menu
         when ""
-          puts "Enter a choice... >_>"
-          puts nil
+          puts "\nEnter a choice... >_>"
         else
           # Check that choice consists only of digits and within @games bounds
           if /\A\d+\z/.match(choice) and choice.to_i <= @games.length and choice.to_i > 0
             # Ask for confirmation
             chosen_game = @games[choice.to_i - 1]
             puts nil
-            printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
-            print "  Are you sure? (y/N) "
-            conf = gets.strip.downcase
-            if conf == "y"
-              # Move associated json file to trash.
-              filename = chosen_game.filename + ".json"
-              FileUtils.mv(File.expand_path("../../data/" + filename, __FILE__),
-                           File.expand_path("../../data/trash/" + filename, __FILE__))
-
-              # Delete from @games array
-              @games.delete(chosen_game)
-              printf "*** Game \"%s\" deleted from database.", chosen_game.filename
-            else
-              puts "You changed your mind? Fine."
-            end
-            puts nil
+            self.confirm_delete(chosen_game)
             return # to main menu
           else
             printf "Invalid choice: %s\n", choice
@@ -215,19 +206,264 @@ module Reachy
       end
     end
 
+    def confirm_delete(chosen_game)
+      printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
+      print "  Are you sure? (y/N) "
+      conf = gets.strip.downcase
+      if conf == "y"
+        # Move associated json file to trash.
+        filename = chosen_game.filename + ".json"
+        FileUtils.mv(File.expand_path("../../data/" + filename, __FILE__),
+                     File.expand_path("../../data/trash/" + filename, __FILE__))
+
+        # Delete from @games array
+        @games.delete(chosen_game)
+        printf "*** Game \"%s\" deleted from database.\n\n", chosen_game.filename
+        return true
+      else
+        puts "You changed your mind? Fine.\n\n"
+        return false
+      end
+    end
+
     # Display all scoreboards. Main menu option 4.
     def display_all_scoreboards
       @games.each do |game|
         game.print_scoreboard
-        puts nil
       end
     end
 
-    # TODO: Game menu for a particular game (i.e. SUB)
-    def game_menu(index)
-      printf "TODO: THE GAME MENU (SUB) FOR THE GAME: "
-      @games[index].print_title
+    # Game menu for a particular game
+    # TODO: support EOF in sub-menu
+    def game_menu
+      loop do
+        game = @games[@selected_game_index]
+        puts "(Enter \"x\" to go back to main menu.)\n"
+        puts nil
+        printf "*** Game \"%s\" Options:\n" \
+             "  1) Add next round result\n" \
+             "  2) Declare riichi\n" \
+             "  3) View current scoreboard\n" \
+             "  4) Remove last round entry\n" \
+             "  5) Delete current game\n" \
+             "  6) Choose a different game\n" \
+             "  7) Add new game\n", game.filename
+        print "---> Enter your choice: "
+        choice = gets.strip
+        case choice
+        when "x"
+          puts nil
+          return # to main menu
+        when "1"
+          puts "\n[Add next round result]"
+          puts nil
+          self.add_round(game)
+        when "2"
+          puts "\n[Declare riichi]"
+          puts nil
+          self.declare_riichi(game)
+        when "3"
+          puts "\n[View current scoreboard]"
+          puts nil
+          game.print_scoreboard
+          puts "\n(Press any key to continue)"
+          STDIN.getch
+        when "4"
+          puts "\n[Remove last round entry]"
+          puts nil
+          self.remove_last_round(game)
+        when "5"
+          puts "\n[Delete current game]"
+          puts nil
+          if self.confirm_delete(game) then return end # main menu if current game deleted
+        when "6"
+          puts "\n[Choose a different game]"
+          puts nil
+          self.view_game
+        when "7"
+          puts "\n[Add new game]"
+          puts nil
+          self.add_game
+        when ""
+          puts "\nEnter a choice... >_>"
+          puts nil
+        else
+          printf "\nInvalid choice: %s\n", choice
+          puts nil
+        end
+      end
+    end
+
+    # Validate hand input
+    # Param: hand - string of hand value input
+    # Return: reformated hand value or empty list if input invalid
+    def validate_hand(hand)
+      split_hand = hand.split
+      hand = []
+      i = 0
+      flag = true
+      while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
+        if split_hand[i].match(/^\d+$/)
+          if split_hand[i+1].match(/^\d+$/)
+            hand << [split_hand[i].to_i, split_hand[i+1].to_i]
+            i += 2
+          else
+            flag = false
+            hand = []
+            break
+          end
+        elsif L_HANDS.include?(split_hand[i])
+          hand << [split_hand[i]]
+          i += 1
+        else
+          flag = false
+          hand = []
+          break
+        end
+      end
+      if not flag
+        printf "Hand value malformed: \"%s\"\n", hand
+      end
+      return hand
+    end
+
+    # Add a new round to the current game. Sub menu option 1.
+    def add_round(game)
+        puts "(Enter \"x\" to return to game options.)"
+        puts nil
+        print "---> Dealer's name: "
+        dealer = gets.strip.downcase
+        if dealer == "x" then return end
+        puts nil
+
+        loop do
+          printf "*** Round result type:\n" \
+                 "  1) Tsumo\n" \
+                 "  2) Ron\n" \
+                 "  3) Tenpai\n" \
+                 "  4) Noten\n" \
+                 "  5) Chombo\n"
+          print "---> Select round result: "
+          choice = gets.strip
+          case choice
+          when "x"
+            puts nil
+            return
+          when "1"
+            # Tsumo
+            type = T_TSUMO
+            print "---> Winner's name: "
+            winner = gets.strip.downcase
+            if winner == "x" then return end
+            winner = [winner]
+            print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+            hand = gets.strip
+            if hand == "x" then return end
+            hand = self.validate_hand(hand)
+            loser = []  # Round::update_round will set loser = all - winner
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when "2"
+            # Ron
+            type = T_RON
+            puts nil
+            print "---> Winner(s): "
+            winner = gets.strip.downcase
+            if winner == "x" then return end
+            winner = winner.split
+            print "---> Player who dealt into winning hand(s): "
+            loser = gets.strip.downcase
+            if loser == "x" then return end
+            loser = [loser]
+            # TODO: check that loser isn't a winner.
+            print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+            hand = gets.strip
+            puts nil
+            if hand == "x" then return end
+            hand = self.validate_hand(hand)
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when "3"
+            # Tenpai
+            type = T_TENPAI
+            print "---> Player(s) in tenpai (separated by space): "
+            winner = gets.strip.downcase
+            if winner == "x" then return end
+            winner = winner.split
+            loser = []  # Round::update_round will set losers = all - winners
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when "4"
+            # Noten
+            type = T_NOTEN
+            winner = []
+            loser = []
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when "5"
+            # Chombo
+            type = T_CHOMBO
+            print "---> Player who chombo'd: "
+            loser = gets.strip.downcase
+            if loser == "x" then return end
+            loser = [loser]
+            winner = [] # Round::update_round will set winners = all - loser
+            hand = []
+            game.add_round(type, dealer, winner, loser, hand)
+            break
+          when ""
+            puts "Enter a choice... >_>"
+            puts nil
+          else
+            printf "Invalid choice: %s\n", choice
+            puts nil
+          end
+        end
+
+        puts "*** Game scoreboard updated."
+        game.print_scoreboard
+    end
+
+    # Update riichi sticks. Sub menu option 2.
+    # TODO: EOF support here
+    # Known bug: changes score of LAST round as well.
+    # Proposed solution: add Round object for the current round before it is finished.
+    #   i.e. game init should create two rounds "0" and "E1"
+    #   then declare_riichi, add_round would simply update E1
+    #   add_round would afterwards clone the round and append to scoreboard (as the NEXT round)
+    def declare_riichi(game)
+      puts "(Enter \"x\" to return to game options.)"
       puts nil
+      print "---> Player who declared riichi: "
+      player = gets.strip.downcase
+      if player == "x" then return end
+
+      if game.add_riichi(player)
+        printf "\n*** Riichi stick added by %s.\n", player
+        game.print_last_round_sticks
+      end
+    end
+
+    # Remove last round from scoreboard. Sub menu option 3.
+    def remove_last_round(game)
+      puts nil
+      printf "---> Removing last round entry:\n"
+      game.print_last_round
+      print "  Are you sure? (y/N) "
+      conf = gets.strip.downcase
+      if conf == "y"
+        game.remove_last_round
+        puts nil
+        puts "*** Game scoreboard updated."
+        puts nil
+        game.print_scoreboard
+        return true
+      else
+        puts "You changed your mind? Fine.\n\n"
+        return false
+      end
     end
 
     # Read all games in data dir, and store in @games array

@@ -43,11 +43,11 @@ module Scoring
     keys_h = if hand.first.instance_of?(String) then hand
              else Scoring.to_keys(hand[0],hand[1]) end
     if dealer
-      val = if keys_h[1] then H_TSUMO["dealer"][keys_h[0]][keys_h[1]]
+      val = if keys_h.length == 2 then H_TSUMO["dealer"][keys_h[0]][keys_h[1]]
             else H_TSUMO["dealer"][keys_h[0]] end
       return { "nondealer" => val }
     else
-      val = if keys_h[1] then H_TSUMO["nondealer"][keys_h[0]][keys_h[1]]
+      val = if keys_h.length == 2 then H_TSUMO["nondealer"][keys_h[0]][keys_h[1]]
             else H_TSUMO["nondealer"][keys_h[0]] end
       return val
     end
