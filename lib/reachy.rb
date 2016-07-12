@@ -349,7 +349,9 @@ module Reachy
         puts "(Enter \"x\" to return to game options.)"
         puts nil
         print "---> Dealer's name: "
-        dealer = gets.strip.downcase
+        dealer = gets
+        if !dealer then self.goodbye end # EOF
+        dealer = dealer.strip.downcase
         if dealer == "x" then return end
         puts nil
 
@@ -361,7 +363,9 @@ module Reachy
                  "  4) Noten\n" \
                  "  5) Chombo\n"
           print "---> Select round result: "
-          choice = gets.strip
+          choice = gets
+          if !choice then self.goodbye end # EOF
+          choice = choice.strip
           case choice
           when "x"
             puts nil
@@ -370,11 +374,15 @@ module Reachy
             # Tsumo
             type = T_TSUMO
             print "---> Winner's name: "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = [winner]
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
-            hand = gets.strip
+            hand = gets
+            if !hand then self.goodbye end #EOF
+            hand = hand.strip
             if hand == "x" then return end
             hand = self.validate_hand(hand)
             loser = []  # Round::update_round will set loser = all - winner
@@ -385,16 +393,22 @@ module Reachy
             type = T_RON
             puts nil
             print "---> Winner(s): "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = winner.split
             print "---> Player who dealt into winning hand(s): "
-            loser = gets.strip.downcase
+            loser = gets
+            if !loser then self.goodbye end # EOF
+            loser = loser.strip.downcase
             if loser == "x" then return end
             loser = [loser]
             # TODO: check that loser isn't a winner.
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
-            hand = gets.strip
+            hand = gets
+            if !hand then self.goodbye end # EOF
+            hand = hand.strip
             puts nil
             if hand == "x" then return end
             hand = self.validate_hand(hand)
@@ -404,7 +418,9 @@ module Reachy
             # Tenpai
             type = T_TENPAI
             print "---> Player(s) in tenpai (separated by space): "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = winner.split
             loser = []  # Round::update_round will set losers = all - winners
@@ -423,7 +439,9 @@ module Reachy
             # Chombo
             type = T_CHOMBO
             print "---> Player who chombo'd: "
-            loser = gets.strip.downcase
+            loser = gets
+            if !loser then self.goodbye end # EOF
+            loser = loser.strip.downcase
             if loser == "x" then return end
             loser = [loser]
             winner = [] # Round::update_round will set winners = all - loser
@@ -454,7 +472,9 @@ module Reachy
       puts "(Enter \"x\" to return to game options.)"
       puts nil
       print "---> Player who declared riichi: "
-      player = gets.strip.downcase
+      player = gets
+      if !player then self.goodbye end # EOF
+      player = player.strip.downcase
       if player == "x" then return end
 
       if game.add_riichi(player)
@@ -469,7 +489,9 @@ module Reachy
       printf "---> Removing last round entry:\n"
       game.print_last_round
       print "  Are you sure? (y/N) "
-      conf = gets.strip.downcase
+      conf = gets
+      if !conf then self.goodbye end
+      conf = conf.strip.downcase
       if conf == "y"
         game.remove_last_round
         puts nil
