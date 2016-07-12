@@ -351,6 +351,8 @@ module Reachy
               else
                 hand << [split_hand[i]]
                 i += 1
+              end
+            end
             game.add_round(type, dealer, winner, loser, hand)
             break
           when "3"
