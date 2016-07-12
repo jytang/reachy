@@ -44,13 +44,15 @@ module Reachy
         when "1"
           puts nil
           puts "View or update existing game scoreboard"
-          self.view_game
-          self.game_menu
+          if self.view_game
+            self.game_menu
+          end
         when "2"
           puts nil
           puts "Add new game"
-          self.add_game
-          self.game_menu
+          if self.add_game
+            self.game_menu
+          end
         when "3"
           puts nil
           puts "Delete existing game"
@@ -80,7 +82,7 @@ module Reachy
         choice = gets.strip
         case choice
         when "x"
-          return # to main menu
+          return false # to main menu
         when ""
           puts "Enter a choice... >_>"
           puts nil
@@ -99,6 +101,7 @@ module Reachy
           end
         end
       end
+      return true
     end
 
     # Add a game. Main menu option 2.
@@ -111,7 +114,7 @@ module Reachy
       until unique do
         print "---> Game name: "
         name = gets.strip
-        if name == "x" then return end # main menu
+        if name == "x" then return false end # main menu
         unique = true
         @games.each do |game|
           if game.filename == name
@@ -127,7 +130,7 @@ module Reachy
       until good do
         print "---> Number of players (3 or 4): "
         nump = gets.strip
-        if nump == "x" then return end # main menu
+        if nump == "x" then return false end # main menu
         nump = nump.to_i
         if nump == 3 or nump == 4
           good = true
@@ -141,7 +144,7 @@ module Reachy
       until good do
         print "---> Player names (separated by spaces): "
         players = gets.strip
-        if players == "x" then return end # main menu
+        if players == "x" then return false end # main menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
           good = true
@@ -170,6 +173,7 @@ module Reachy
       puts "*** New game created! Scoreboard: "
       newgame.print_scoreboard
       @selected_game_index = @games.length - 1 # last entry is the new game
+      return true
     end
 
     # Delete a game. Main menu option 3.
@@ -335,6 +339,7 @@ module Reachy
             loser = gets.strip.downcase
             if loser == "x" then next end
             loser = [loser]
+            # TODO: check that loser isn't a winner.
             puts nil
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
@@ -346,7 +351,7 @@ module Reachy
             i = 0
             while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
               if split_hand[i].match(/^\d+$/)
-                hand << [split_hand[i], split_hand[i+1]]
+                hand << [split_hand[i].to_i, split_hand[i+1].to_i]
                 i += 2
               else
                 hand << [split_hand[i]]
