@@ -1,4 +1,35 @@
-# Reachy
+# Reachy - Riichi Score Tracker
+
+A demo program that helps you keep track of Japanese mahjong (Riichi) score
+as you play.
+
+* Able to keep track of multiple game sessions.
+* Input each round result with winners and winning hands (number of
+    _han_'s and _fu_'s, _mangan_, _yakuman_, etc.).
+* Simple and straightforward interface for easy interaction.
+
+## Quick Start
+
+### 1. Requirements
+
+* ruby 2.0 and above
+* (Optional) cowsay
+
+### 2. Installation and Usage
+
+Clone this repo:
+
+```
+git clone https://github.com/jytang/reachy.git
+```
+
+Start the program:
+
+```
+./bin/reachy
+```
+
+## Note
 
 *When you reach the end of your rope, tie a knot and hang on*
 

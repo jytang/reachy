@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
     spec.authors        = ["Thao Truong (Kainu)", "Joshua Tang"]
     spec.summary        = %q{Riichi Score Tracker}
     spec.files          = ["lib/reachy.rb"]
-    spec.executables    = ["bin/reachy"]
+    spec.executables    = ["reachy"]
     spec.test_files     = ["tests/test_reachy.rb"]
     spec.require_paths  = ["lib"]
 end
