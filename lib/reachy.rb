@@ -39,8 +39,9 @@ module Reachy
              "  3) Delete existing game\n" \
              "  4) Display all scoreboards"
         print "---> Enter your choice: "
-        choice = gets.strip
-        case choice
+        choice = gets
+        if !choice then self.goodbye end # EOF
+        case choice.strip
         when "1"
           puts "\n[View or update existing game scoreboard]"
           puts nil
@@ -79,10 +80,12 @@ module Reachy
         puts "*** Choose existing game:"
         self.display_all_games
         print "---> Enter your choice: "
-        choice = gets.strip
-        puts nil
+        choice = gets
+        if !choice then self.goodbye end # EOF
+        choice = choice.strip
         case choice
         when "x"
+          puts nil
           return false # to main menu
         when ""
           puts "Enter a choice... >_>"
@@ -104,15 +107,20 @@ module Reachy
 
     # Add a game. Main menu option 2.
     def add_game
-      puts "(Enter \"x\" to go back to main menu.)"
+      puts "(Enter \"x\" to go back to previous menu.)"
       puts nil
 
       # Ask for unique game name.
       unique = false
       until unique do
         print "---> Game name: "
-        name = gets.strip
-        if name == "x" then return false end # main menu
+        name = gets
+        if !name then self.goodbye end # EOF
+        name = name.strip
+        if name == "x"
+          puts nil
+          return false
+        end # previous menu
         unique = true
         @games.each do |game|
           if game.filename == name
@@ -127,8 +135,13 @@ module Reachy
       good = false
       until good do
         print "---> Number of players (3 or 4): "
-        nump = gets.strip
-        if nump == "x" then return false end # main menu
+        nump = gets
+        if !nump then self.goodbye end # EOF
+        nump = nump.strip
+        if nump == "x"
+          puts nil
+          return false
+        end # previous menu
         nump = nump.to_i
         if nump == 3 or nump == 4
           good = true
@@ -141,8 +154,13 @@ module Reachy
       good = false
       until good do
         print "---> Player names (separated by spaces): "
-        players = gets.strip
-        if players == "x" then return false end # main menu
+        players = gets
+        if !players then self.goodbye end # EOF
+        players = players.strip
+        if nump == "x"
+          puts nil
+          return false
+        end # previous menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
           good = true
@@ -155,7 +173,11 @@ module Reachy
       start_score = nump == 3 ? 35000 : 25000
       init_scoreboard = Hash[ *players.collect { |p| [p.downcase, start_score] }.flatten]
       # Make new game object (TODO: do less hard coding)
-      init_round = {"wind" => nil, "number" => 0, "bonus" => 0, "riichi" => 0, "scores" => init_scoreboard}
+      init_round = {"wind" => nil,
+                    "number" => 0,
+                    "bonus" => 0,
+                    "riichi" => 0,
+                    "scores" => init_scoreboard}
       now_stamp = DateTime.now.to_s
       game_hash = {"filename" => name,
                    "created_at" => now_stamp,
@@ -168,10 +190,9 @@ module Reachy
 
       # Add to @games array and go to its menu.
       @games << newgame
-      puts "*** New game created! Scoreboard:"
+      puts "\n*** New game created! Scoreboard:"
       puts nil
       newgame.print_scoreboard
-      puts nil
       @selected_game_index = @games.length - 1 # last entry is the new game
       return true
     end
@@ -184,7 +205,9 @@ module Reachy
         puts "*** Choose existing game to delete:"
         self.display_all_games
         print "---> Enter your choice: "
-        choice = gets.strip
+        choice = gets
+        if !choice then self.goodbye end
+        choice = choice.strip
         case choice
         when "x"
           return # to main menu
@@ -209,7 +232,9 @@ module Reachy
     def confirm_delete(chosen_game)
       printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
       print "  Are you sure? (y/N) "
-      conf = gets.strip.downcase
+      conf = gets
+      if !conf then self.goodbye end
+      conf = conf.strip.downcase
       if conf == "y"
         # Move associated json file to trash.
         filename = chosen_game.filename + ".json"
@@ -249,8 +274,9 @@ module Reachy
              "  6) Choose a different game\n" \
              "  7) Add new game\n", game.filename
         print "---> Enter your choice: "
-        choice = gets.strip
-        case choice
+        choice = gets
+        if !choice then self.goodbye end # EOF
+        case choice.strip
         when "x"
           puts nil
           return # to main menu
@@ -332,7 +358,9 @@ module Reachy
         puts "(Enter \"x\" to return to game options.)"
         puts nil
         print "---> Dealer's name: "
-        dealer = gets.strip.downcase
+        dealer = gets
+        if !dealer then self.goodbye end # EOF
+        dealer = dealer.strip.downcase
         if dealer == "x" then return end
         puts nil
 
@@ -344,7 +372,9 @@ module Reachy
                  "  4) Noten\n" \
                  "  5) Chombo\n"
           print "---> Select round result: "
-          choice = gets.strip
+          choice = gets
+          if !choice then self.goodbye end # EOF
+          choice = choice.strip
           case choice
           when "x"
             puts nil
@@ -353,11 +383,15 @@ module Reachy
             # Tsumo
             type = T_TSUMO
             print "---> Winner's name: "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = [winner]
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
-            hand = gets.strip
+            hand = gets
+            if !hand then self.goodbye end #EOF
+            hand = hand.strip
             if hand == "x" then return end
             hand = self.validate_hand(hand)
             loser = []  # Round::update_round will set loser = all - winner
@@ -368,16 +402,22 @@ module Reachy
             type = T_RON
             puts nil
             print "---> Winner(s): "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = winner.split
             print "---> Player who dealt into winning hand(s): "
-            loser = gets.strip.downcase
+            loser = gets
+            if !loser then self.goodbye end # EOF
+            loser = loser.strip.downcase
             if loser == "x" then return end
             loser = [loser]
             # TODO: check that loser isn't a winner.
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
-            hand = gets.strip
+            hand = gets
+            if !hand then self.goodbye end # EOF
+            hand = hand.strip
             puts nil
             if hand == "x" then return end
             hand = self.validate_hand(hand)
@@ -387,7 +427,9 @@ module Reachy
             # Tenpai
             type = T_TENPAI
             print "---> Player(s) in tenpai (separated by space): "
-            winner = gets.strip.downcase
+            winner = gets
+            if !winner then self.goodbye end # EOF
+            winner = winner.strip.downcase
             if winner == "x" then return end
             winner = winner.split
             loser = []  # Round::update_round will set losers = all - winners
@@ -406,7 +448,9 @@ module Reachy
             # Chombo
             type = T_CHOMBO
             print "---> Player who chombo'd: "
-            loser = gets.strip.downcase
+            loser = gets
+            if !loser then self.goodbye end # EOF
+            loser = loser.strip.downcase
             if loser == "x" then return end
             loser = [loser]
             winner = [] # Round::update_round will set winners = all - loser
@@ -437,7 +481,9 @@ module Reachy
       puts "(Enter \"x\" to return to game options.)"
       puts nil
       print "---> Player who declared riichi: "
-      player = gets.strip.downcase
+      player = gets
+      if !player then self.goodbye end # EOF
+      player = player.strip.downcase
       if player == "x" then return end
 
       if game.add_riichi(player)
@@ -452,7 +498,9 @@ module Reachy
       printf "---> Removing last round entry:\n"
       game.print_last_round
       print "  Are you sure? (y/N) "
-      conf = gets.strip.downcase
+      conf = gets
+      if !conf then self.goodbye end
+      conf = conf.strip.downcase
       if conf == "y"
         game.remove_last_round
         puts nil
@@ -489,5 +537,32 @@ module Reachy
       end
     end
 
+    # Display winners of every game
+    def display_all_winners
+      puts " Current winners:"
+      puts " ----------------"
+      @games.each do |game|
+        winner, winner_score = game.scoreboard.last.scores.max_by{ |player, score| score}
+        printf "  * %s: %s - %d points\n", game.filename, winner, winner_score
+      end
+      puts nil
+    end
+
+    def cowsay
+      if system("which cowsay >/dev/null 2>&1")
+        system("cowsay Bye!")
+      end
+    end
+
+    # Message to print when quitting program
+    def goodbye
+      puts "\n\n"
+      printf "  -------------------------------\n" \
+             "  |  Thanks for flying reachy!  |\n" \
+             "  -------------------------------\n\n"
+      self.display_all_winners
+      self.cowsay
+      exit 0
+    end
   end
 end
