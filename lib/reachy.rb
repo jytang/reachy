@@ -354,11 +354,11 @@ module Reachy
             type = T_TSUMO
             print "---> Winner's name: "
             winner = gets.strip.downcase
-            if winner == "x" then next end
+            if winner == "x" then return end
             winner = [winner]
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
-            if hand == "x" then next end
+            if hand == "x" then return end
             hand = self.validate_hand(hand)
             loser = []  # Round::update_round will set loser = all - winner
             game.add_round(type, dealer, winner, loser, hand)
@@ -369,17 +369,17 @@ module Reachy
             puts nil
             print "---> Winner(s): "
             winner = gets.strip.downcase
-            if winner == "x" then next end
+            if winner == "x" then return end
             winner = winner.split
             print "---> Player who dealt into winning hand(s): "
             loser = gets.strip.downcase
-            if loser == "x" then next end
+            if loser == "x" then return end
             loser = [loser]
             # TODO: check that loser isn't a winner.
             print "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
             hand = gets.strip
             puts nil
-            if hand == "x" then next end
+            if hand == "x" then return end
             hand = self.validate_hand(hand)
             game.add_round(type, dealer, winner, loser, hand)
             break
@@ -388,7 +388,7 @@ module Reachy
             type = T_TENPAI
             print "---> Player(s) in tenpai (separated by space): "
             winner = gets.strip.downcase
-            if winner == "x" then next end
+            if winner == "x" then return end
             winner = winner.split
             loser = []  # Round::update_round will set losers = all - winners
             hand = []
@@ -407,7 +407,7 @@ module Reachy
             type = T_CHOMBO
             print "---> Player who chombo'd: "
             loser = gets.strip.downcase
-            if loser == "x" then next end
+            if loser == "x" then return end
             loser = [loser]
             winner = [] # Round::update_round will set winners = all - loser
             hand = []
