@@ -85,6 +85,7 @@ module Reachy
         choice = choice.strip
         case choice
         when "x"
+          puts nil
           return false # to main menu
         when ""
           puts "Enter a choice... >_>"
@@ -106,7 +107,7 @@ module Reachy
 
     # Add a game. Main menu option 2.
     def add_game
-      puts "(Enter \"x\" to go back to main menu.)"
+      puts "(Enter \"x\" to go back to previous menu.)"
       puts nil
 
       # Ask for unique game name.
@@ -116,7 +117,10 @@ module Reachy
         name = gets
         if !name then self.goodbye end # EOF
         name = name.strip
-        if name == "x" then return false end # main menu
+        if name == "x"
+          puts nil
+          return false
+        end # previous menu
         unique = true
         @games.each do |game|
           if game.filename == name
@@ -134,7 +138,10 @@ module Reachy
         nump = gets
         if !nump then self.goodbye end # EOF
         nump = nump.strip
-        if nump == "x" then return false end # main menu
+        if nump == "x"
+          puts nil
+          return false
+        end # previous menu
         nump = nump.to_i
         if nump == 3 or nump == 4
           good = true
@@ -150,7 +157,10 @@ module Reachy
         players = gets
         if !players then self.goodbye end # EOF
         players = players.strip
-        if players == "x" then return false end # main menu
+        if nump == "x"
+          puts nil
+          return false
+        end # previous menu
         players = players.split
         if players.length == nump and players.uniq.length == players.length
           good = true
@@ -180,10 +190,9 @@ module Reachy
 
       # Add to @games array and go to its menu.
       @games << newgame
-      puts "*** New game created! Scoreboard:"
+      puts "\n*** New game created! Scoreboard:"
       puts nil
       newgame.print_scoreboard
-      puts nil
       @selected_game_index = @games.length - 1 # last entry is the new game
       return true
     end
@@ -530,11 +539,13 @@ module Reachy
 
     # Display winners of every game
     def display_all_winners
-      puts "Current winners:"
+      puts " Current winners:"
+      puts " ----------------"
       @games.each do |game|
         winner, winner_score = game.scoreboard.last.scores.max_by{ |player, score| score}
-        printf "%s: %s - %d points\n", game.filename, winner, winner_score
+        printf "  * %s: %s - %d points\n", game.filename, winner, winner_score
       end
+      puts nil
     end
 
     def cowsay
@@ -546,9 +557,12 @@ module Reachy
     # Message to print when quitting program
     def goodbye
       puts "\n\n"
+      printf "  -------------------------------\n" \
+             "  |  Thanks for flying reachy!  |\n" \
+             "  -------------------------------\n\n"
       self.display_all_winners
       self.cowsay
-      abort
+      exit 0
     end
   end
 end
