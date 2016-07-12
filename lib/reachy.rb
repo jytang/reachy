@@ -94,14 +94,13 @@ module Reachy
             @games[choice.to_i - 1].print_scoreboard
             puts nil
             @selected_game_index = choice.to_i - 1
-            return # to main menu
+            return true # to main menu
           else
             printf "Invalid choice: %s\n", choice
             puts nil
           end
         end
       end
-      return true
     end
 
     # Add a game. Main menu option 2.
