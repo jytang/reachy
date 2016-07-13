@@ -44,7 +44,7 @@ module Reachy
       when "5"
         puts "\n[Delete current game]"
         puts nil
-        if confirm_delete(game) then return end # main menu if current game deleted
+        return if confirm_delete(game) # main menu if current game deleted
       when "6"
         puts "\n[Choose a different game]"
         puts nil
@@ -68,7 +68,7 @@ module Reachy
     puts "(Enter \"x\" to return to game options.)"
     puts nil
     dealer = prompt "---> Dealer's name: "
-    if dealer == "x" then return end
+    return if dealer == "x"
     puts nil
 
     loop do
@@ -87,10 +87,10 @@ module Reachy
         # Tsumo
         type = T_TSUMO
         winner = prompt "---> Winner's name: "
-        if winner == "x" then return end
+        return if winner == "x"
         winner = [winner]
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
-        if hand == "x" then return end
+        return if hand == "x"
         hand = validate_hand(hand)
         loser = []  # Round::update_round will set loser = all - winner
         game.add_round(type, dealer, winner, loser, hand)
@@ -100,15 +100,15 @@ module Reachy
         type = T_RON
         puts nil
         winner = prompt "---> Winner(s): "
-        if winner == "x" then return end
+        return if winner == "x"
         winner = winner.split
         loser = prompt "---> Player who dealt into winning hand(s): "
-        if loser == "x" then return end
+        return if loser == "x"
         loser = [loser]
         # TODO: check that loser isn't a winner.
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         puts nil
-        if hand == "x" then return end
+        return if hand == "x"
         hand = validate_hand(hand)
         game.add_round(type, dealer, winner, loser, hand)
         break
@@ -116,7 +116,7 @@ module Reachy
         # Tenpai
         type = T_TENPAI
         winner = prompt "---> Player(s) in tenpai (separated by space): "
-        if winner == "x" then return end
+        return if winner == "x"
         winner = winner.split
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
@@ -134,7 +134,7 @@ module Reachy
         # Chombo
         type = T_CHOMBO
         loser = prompt "---> Player who chombo'd: "
-        if loser == "x" then return end
+        return if loser == "x"
         loser = [loser]
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
@@ -165,7 +165,7 @@ module Reachy
     puts "(Enter \"x\" to return to game options.)"
     puts nil
     player = prompt "---> Player who declared riichi: "
-    if player == "x" then return end
+    return if player == "x"
 
     if game.add_riichi(player)
       printf "\n*** Riichi stick added by %s.\n", player

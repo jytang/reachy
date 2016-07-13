@@ -100,9 +100,7 @@ module Reachy
   end
 
   def self.cowsay
-    if system("which cowsay >/dev/null 2>&1")
-      system("cowsay Bye!")
-    end
+    system("cowsay Bye!") if system("which cowsay >/dev/null 2>&1")
   end
 
   # Message to print when quitting program

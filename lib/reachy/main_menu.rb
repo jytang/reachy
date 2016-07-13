@@ -17,15 +17,11 @@ module Reachy
       when "1"
         puts "\n[View or update existing game scoreboard]"
         puts nil
-        if view_game
-          game_menu
-        end
+        game_menu if view_game
       when "2"
         puts "\n[Add new game]"
         puts nil
-        if add_game
-          game_menu
-        end
+        game_menu if add_game
       when "3"
         puts "\n[Delete existing game]"
         puts nil
@@ -84,10 +80,7 @@ module Reachy
     unique = false
     until unique do
       name = prompt "---> Game name: "
-      if name == "x"
-        puts nil
-        return false
-      end # previous menu
+      return false if name == "x"
       unique = true
       @games.each do |game|
         if game.filename == name
@@ -102,10 +95,7 @@ module Reachy
     good = false
     until good do
       nump = prompt "---> Number of players (3 or 4): "
-      if nump == "x"
-        puts nil
-        return false
-      end # previous menu
+      return false if nump == "x"
       nump = nump.to_i
       if nump == 3 or nump == 4
         good = true
@@ -118,10 +108,7 @@ module Reachy
     good = false
     until good do
       players = prompt "---> Player names (separated by spaces): "
-      if nump == "x"
-        puts nil
-        return false
-      end # previous menu
+      return false if nump == "x"
       players = players.split
       if players.length == nump and players.uniq.length == players.length
         good = true

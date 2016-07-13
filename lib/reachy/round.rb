@@ -23,8 +23,8 @@ module Reachy
       @bonus = db["bonus"]
       @riichi = db["riichi"]
       @name = @wind ? (@wind + @number.to_s) : "0"
-      if @bonus > 0 then @name += "B" + @bonus.to_s end
-      if @riichi > 0 then @name += "R" + @riichi.to_s end
+      @name += "B" + @bonus.to_s if @bonus > 0
+      @name += "R" + @riichi.to_s if @riichi > 0
       @scores = db["scores"]
       @mode = @scores.length
     end
@@ -96,7 +96,7 @@ module Reachy
             printf "Error: \"%s\" not in current list of players\n", l
           end
         end
-        if not dealer then @bonus = 0 end
+		@bonus = 0 if not dealer
         @scores[winner] += @riichi*Scoring::P_RIICHI
         @riichi = 0
         return true
@@ -109,8 +109,8 @@ module Reachy
     # Update round name
     def update_name
       @name = @wind ? (@wind + @number.to_s) : "0"
-      if @bonus > 0 then @name += "B" + @bonus.to_s end
-      if @riichi > 0 then @name += "R" + @riichi.to_s end
+      @name += "B" + @bonus.to_s if @bonus > 0
+      @name += "R" + @riichi.to_s if @riichi > 0
     end
 
     # Update round data from given input
@@ -143,13 +143,11 @@ module Reachy
         # Tsumo type: loser = everyone else
         losers = @scores.keys
         losers -= winner
-        if not self.award_bonus(winner.first,losers,dealer_flag) then return false end
-        if @name == "0" then self.next_round end
+        return false if not self.award_bonus(winner.first,losers,dealer_flag)
+        self.next_round if @name == "0"
         self.update_name
-        if dealer_flag then @bonus += 1 end
-        if not dealer_flag
-          self.next_round
-        end
+        @bonus += 1 if dealer_flag
+		self.next_round if not dealer_flag
         # Hand validation: should be taken care of at input
         #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
         #  printf "\"%s\" is not a valid hand value!\n", hand.first
@@ -166,13 +164,11 @@ module Reachy
 
       when T_RON
         # Ron type - can have multiple winners off of same loser
-        if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
-        if @name == "0" then self.next_round end
+        return false if not self.award_bonus(winner.first,loser,dealer_flag)
+        self.next_round if @name == "0"
         self.update_name
-        if dealer_flag then @bonus += 1 end
-        if not dealer_flag
-          self.next_round
-        end
+        @bonus += 1 if dealer_flag
+		self.next_round if not dealer_flag
         winner.zip(hand).each do |w,h|
           paym = Scoring.get_ron((w==dealer),h)
           @scores[w] += paym
@@ -183,13 +179,11 @@ module Reachy
         # Tenpai type: losers = all - winners
         losers = @scores.keys
         losers -= winner
-        if @name == "0" then self.next_round end
+        self.next_round if @name == "0"
         self.update_name
         if winner.length < @mode
-          if dealer_flag then @bonus += 1 end
-          if not dealer_flag
-            self.next_round
-          end
+          @bonus += 1 if dealer_flag
+		  self.next_round if not dealer_flag
           total = @mode==4 ? Scoring::P_TENPAI_4 : Scoring::P_TENPAI_3
           paym = total / losers.length
           recv = total / winner.length
@@ -203,7 +197,7 @@ module Reachy
 
       when T_NOTEN
         # Noten type: ignore all other params
-        if @name == "0" then self.next_round end
+        self.next_round if @name == "0"
         self.update_name
 
       when T_CHOMBO
