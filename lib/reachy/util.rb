@@ -3,13 +3,18 @@ module Reachy
   # Prompt for user input with a message.
   # If EOF is entered, aborts program.
   # Param: message - string to display
+  #        downcase - whether to downcase input
   # Return: User input
-  # Note: strips and downcases input!
-  def self.prompt(message)
+  # Note: always strips input!
+  def self.prompt(message, downcase=true)
     print message
     input = gets
     goodbye if !input
-    return input.strip.downcase
+    if downcase
+      return input.strip.downcase
+    else
+      return input.strip
+    end
   end
 
   # Read all games in data dir, and store in @games array

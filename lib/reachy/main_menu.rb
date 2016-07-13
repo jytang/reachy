@@ -112,7 +112,7 @@ module Reachy
     # Ask for unique player handles
     good = false
     until good do
-      players = prompt "---> Player names (separated by spaces): "
+      players = prompt("---> Player names (separated by spaces): ", false)
       return false if nump == "x"
       players = players.split
       if players.length == nump and players.uniq.length == players.length
