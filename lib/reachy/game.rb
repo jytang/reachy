@@ -67,7 +67,6 @@ module Reachy
       end
     end
 
-    # TODO: consider changing this function for easier usage
     # Add new round result
     def add_round(type, dealer, winner, loser, hand)
       @scoreboard.last.update_round(type, dealer, winner, loser, hand)
@@ -75,6 +74,15 @@ module Reachy
       new_round.update_name
       @scoreboard << new_round
       self.write_data
+    end
+
+    # Clone last round as next round and add to scoreboard
+    # Currently only used to clone initial round setup
+    def clone_last_round
+      new_round = @scoreboard.last.clone
+      new_round.next_round
+      new_round.update_name
+      @scoreboard << new_round
     end
 
     # Remove latest round from scoreboard

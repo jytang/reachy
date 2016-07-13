@@ -132,16 +132,14 @@ module Reachy
                   "riichi" => 0,
                   "scores" => init_scoreboard}
     now_stamp = DateTime.now.to_s
-    init_clone = init_round.clone
-    init_clone["wind"] = "E"
-    init_clone["number"] = 1
     game_hash = {"filename" => name,
                  "created_at" => now_stamp,
                  "last_updated" => now_stamp,
                  "mode" => nump,
                  "players" => players,
-                 "scoreboard" => [init_round, init_clone]}
+                 "scoreboard" => [init_round]}
     newgame = Game.new(game_hash)
+    newgame.clone_last_round
     newgame.write_data
 
     # Add to @games array and go to its menu.
