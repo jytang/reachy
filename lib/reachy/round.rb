@@ -10,21 +10,19 @@ module Reachy
     attr_reader   :mode           # Game mode
     attr_reader   :wind           # Round wind
     attr_reader   :number         # Round number
-    attr_reader   :bonus          # Bonus sticks at beginning of round
-    attr_accessor :riichi         # Riichi sticks available before round ends
+    attr_reader   :bonus          # Current bonus sticks
+    attr_accessor :riichi         # Current riichi sticks
     attr_accessor :scores         # Hash of <player's name> => <score>
 
     # Initialize round
     # Param: round - hash of round data
     # Populate Round object with info from hash
     def initialize(db)
+      @name = db["name"]
       @wind = db["wind"]
       @number = db["number"]
       @bonus = db["bonus"]
       @riichi = db["riichi"]
-      @name = @wind ? (@wind + @number.to_s) : "0"
-      @name += "B" + @bonus.to_s if @bonus > 0
-      @name += "R" + @riichi.to_s if @riichi > 0
       @scores = db["scores"]
       @mode = @scores.length
     end
@@ -38,7 +36,6 @@ module Reachy
     def to_h
       hash = self.instance_variables.each_with_object({}) \
         { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
-      hash.delete("name")
       hash.delete("mode")
       return hash
     end
@@ -107,7 +104,7 @@ module Reachy
 
     # Update round name
     def update_name
-      @name = @wind ? (@wind + @number.to_s) : "0"
+      @name = @wind ? (@wind + @number.to_s) : ""
       @name += "B" + @bonus.to_s if @bonus > 0
       @name += "R" + @riichi.to_s if @riichi > 0
     end

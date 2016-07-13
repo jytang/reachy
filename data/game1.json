@@ -1,7 +1,7 @@
 {
   "filename": "game1",
-  "created_at": "2016-11-05T14:05:00-07:00",
-  "last_updated": "2016-07-09T18:49:53-07:00",
+  "created_at": "2016-07-13T02:18:52-07:00",
+  "last_updated": "2016-07-13T02:28:02-07:00",
   "mode": 3,
   "players": [
     "Joshua",
@@ -10,6 +10,7 @@
   ],
   "scoreboard": [
     {
+      "name": "",
       "wind": null,
       "number": 0,
       "bonus": 0,
@@ -21,36 +22,51 @@
       }
     },
     {
-      "wind": "E",
-      "number": 1,
-      "bonus": 0,
-      "riichi": 0,
-      "scores": {
-        "joshua": 33400,
-        "kenta": 39800,
-        "thao": 31800
-      }
-    },
-    {
+      "name": "E1",
       "wind": "E",
       "number": 1,
       "bonus": 1,
       "riichi": 0,
       "scores": {
-        "joshua": 35400,
-        "kenta": 38800,
-        "thao": 30800
+        "joshua": 36000,
+        "kenta": 36000,
+        "thao": 33000
       }
     },
     {
+      "name": "E1B1",
       "wind": "E",
       "number": 1,
       "bonus": 2,
+      "riichi": 1,
+      "scores": {
+        "joshua": 37000,
+        "kenta": 34000,
+        "thao": 33000
+      }
+    },
+    {
+      "name": "E1B2R1",
+      "wind": "E",
+      "number": 1,
+      "bonus": 3,
       "riichi": 0,
       "scores": {
-        "joshua": 43700,
-        "kenta": 34700,
-        "thao": 26700
+        "joshua": 50600,
+        "kenta": 21400,
+        "thao": 33000
+      }
+    },
+    {
+      "name": "E1B3",
+      "wind": "E",
+      "number": 1,
+      "bonus": 3,
+      "riichi": 0,
+      "scores": {
+        "joshua": 50600,
+        "kenta": 21400,
+        "thao": 33000
       }
     }
   ]

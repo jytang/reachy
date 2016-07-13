@@ -70,17 +70,15 @@ module Reachy
     # Add new round result
     def add_round(type, dealer, winner, loser, hand)
       @scoreboard.last.update_round(type, dealer, winner, loser, hand)
-      new_round = @scoreboard.last.clone
-      new_round.update_name
-      @scoreboard << new_round
+      self.clone_last_round
       self.write_data
     end
 
     # Clone last round as next round and add to scoreboard
-    # Currently only used to clone initial round setup
-    def clone_last_round
+    # Param: to_next  - bool indicating whether to move to next round (optional)
+    def clone_last_round(to_next=false)
       new_round = @scoreboard.last.clone
-      new_round.next_round
+      if (to_next || new_round.name == "") then new_round.next_round end
       new_round.update_name
       @scoreboard << new_round
     end
@@ -89,6 +87,8 @@ module Reachy
     def remove_last_round
       if @scoreboard.length > 2
         @scoreboard.pop
+        @scoreboard.pop
+        self.clone_last_round
         self.write_data
       else
         printf "Error: Current game already in initial state. " \

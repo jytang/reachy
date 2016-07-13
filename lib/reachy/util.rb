@@ -34,10 +34,16 @@ module Reachy
 
   # Print out all games in database
   def self.display_all_games
+    if @games.empty?
+      puts "  No game currently in database. Please add a new game."
+      puts nil
+      return false
+    end
     @games.each_with_index do |game, index|
       printf "  %d) ", index + 1
       game.print_title
     end
+    return true
   end
 
   def self.confirm_delete(chosen_game)
