@@ -467,6 +467,7 @@ module Reachy
         end
 
         puts "*** Game scoreboard updated."
+        puts nil
         game.print_scoreboard
     end
 
@@ -494,7 +495,6 @@ module Reachy
 
     # Remove last round from scoreboard. Sub menu option 3.
     def remove_last_round(game)
-      puts nil
       printf "---> Removing last round entry:\n"
       game.print_last_round
       print "  Are you sure? (y/N) "

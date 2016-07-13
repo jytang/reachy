@@ -143,12 +143,13 @@ class Round
       losers = @scores.keys
       losers -= winner
       if not self.award_bonus(winner.first,losers,dealer_flag) then return false end
-      if dealer_flag
-        @bonus += 1
-      else
+      if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
+      if @name == "0" then self.next_round end
+      self.update_name
+      if dealer_flag then @bonus += 1 end
+      if not dealer_flag
         self.next_round
       end
-      self.update_name
       # Hand validation: should be taken care of at input
       #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
       #  printf "\"%s\" is not a valid hand value!\n", hand.first
@@ -166,12 +167,12 @@ class Round
     when T_RON
       # Ron type - can have multiple winners off of same loser
       if not self.award_bonus(winner.first,loser,dealer_flag) then return false end
-      if dealer_flag
-        @bonus += 1
-      else
+      if @name == "0" then self.next_round end
+      self.update_name
+      if dealer_flag then @bonus += 1 end
+      if not dealer_flag
         self.next_round
       end
-      self.update_name
       winner.zip(hand).each do |w,h|
         paym = Scoring.get_ron((w==dealer),h)
         @scores[w] += paym
@@ -182,18 +183,16 @@ class Round
       # Tenpai type: losers = all - winners
       losers = @scores.keys
       losers -= winner
+      if @name == "0" then self.next_round end
       self.update_name
       if winner.length < @mode
-        # TODO: Fix this naming
-        if @name == "0" then self.next_round end
-        self.update_name
         if dealer_flag then @bonus += 1 end
         if not dealer_flag
           self.next_round
         end
-        lose_count = 4 - winner.length
-        paym = Scoring::P_TENPAI / lose_count
-        recv = (paym * (@mode==4? lose_count : lose_count-1)) / winner.length
+        total = @mode==4 ? Scoring::P_TENPAI_4 : Scoring::P_TENPAI_3
+        paym = total / losers.length
+        recv = total / winner.length
         winner.each do |w|
           @scores[w] += recv
         end
@@ -204,14 +203,13 @@ class Round
 
     when T_NOTEN
       # Noten type: ignore all other params
-      self.next_round
+      if @name == "0" then self.next_round end
       self.update_name
 
     when T_CHOMBO
       # Chombo type: loser = chombo player, winner = everyone else
       winners = @scores.keys
       winners -= loser
-
       dealer_flag = loser.include?(dealer)
       score_h = Scoring.get_chombo(dealer_flag)
       @scores[loser.first] -= if dealer_flag then score_h["nondealer"]*(@mode-1)
