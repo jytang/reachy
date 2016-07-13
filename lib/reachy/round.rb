@@ -92,7 +92,7 @@ module Reachy
             printf "Error: \"%s\" not in current list of players\n", l
           end
         end
-		@bonus = 0 if not dealer
+        @bonus = 0 if not dealer
         @scores[winner] += @riichi*Scoring::P_RIICHI
         @riichi = 0
         return true
@@ -203,8 +203,10 @@ module Reachy
     end
 
     # Print single line round scores
-    def print_scores
-      printf "%-#{COL_SPACING}s", @name
+    def print_scores(ongoing=false)
+      round_name = @name
+      round_name += "*" if ongoing
+      printf "%-#{COL_SPACING}s", round_name
       @scores.each do |key,val|
         printf "%-#{COL_SPACING}d", val
       end

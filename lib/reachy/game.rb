@@ -130,6 +130,8 @@ module Reachy
       @scoreboard[0..-2].each do |r|     # ignores last round - it's ongoing
         r.print_scores
       end
+      # print ongoing round
+      @scoreboard.last.print_scores(true)
       puts nil
     end
 
