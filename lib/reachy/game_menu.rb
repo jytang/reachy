@@ -2,9 +2,12 @@ require_relative 'game'
 require_relative 'round'
 require_relative 'util'
 
+##############################################
+# Game menu and specific game interactions
+##############################################
 module Reachy
+
   # Game menu for a particular game
-  # TODO: support EOF in sub-menu
   def self.game_menu
     loop do
       game = @games[@selected_game_index]
@@ -35,7 +38,7 @@ module Reachy
         puts "\n[View current scoreboard]"
         puts nil
         game.print_scoreboard
-        puts "\n(Press any key to continue)"
+        puts "(Press any key to continue)"
         STDIN.getch
       when "4"
         puts "\n[Remove last round entry]"
@@ -169,7 +172,7 @@ module Reachy
 
     if game.add_riichi(player)
       printf "\n*** Riichi stick added by %s.\n", player
-      game.print_last_round_sticks
+      game.print_current_sticks
     end
   end
 

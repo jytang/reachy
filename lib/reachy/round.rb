@@ -29,7 +29,6 @@ module Reachy
       @mode = @scores.length
     end
 
-    # XXX: Need to be verified
     # Return a deep copy of this Round object
     def clone
       return Marshal.load(Marshal.dump(self))
@@ -144,15 +143,7 @@ module Reachy
         losers = @scores.keys
         losers -= winner
         return false if not self.award_bonus(winner.first,losers,dealer_flag)
-        self.next_round if @name == "0"
-        self.update_name
-        @bonus += 1 if dealer_flag
-		self.next_round if not dealer_flag
-        # Hand validation: should be taken care of at input
-        #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
-        #  printf "\"%s\" is not a valid hand value!\n", hand.first
-        #  return false
-        #end
+        if dealer_flag then @bonus += 1 else self.next_round end
         score_h = Scoring.get_tsumo(dealer_flag, hand.first)
         winner.each do |w|
           @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
@@ -165,10 +156,7 @@ module Reachy
       when T_RON
         # Ron type - can have multiple winners off of same loser
         return false if not self.award_bonus(winner.first,loser,dealer_flag)
-        self.next_round if @name == "0"
-        self.update_name
-        @bonus += 1 if dealer_flag
-		self.next_round if not dealer_flag
+        if dealer_flag then @bonus += 1 else self.next_round end
         winner.zip(hand).each do |w,h|
           paym = Scoring.get_ron((w==dealer),h)
           @scores[w] += paym
@@ -179,11 +167,8 @@ module Reachy
         # Tenpai type: losers = all - winners
         losers = @scores.keys
         losers -= winner
-        self.next_round if @name == "0"
-        self.update_name
         if winner.length < @mode
-          @bonus += 1 if dealer_flag
-		  self.next_round if not dealer_flag
+          if dealer_flag then @bonus += 1 else self.next_round end
           total = @mode==4 ? Scoring::P_TENPAI_4 : Scoring::P_TENPAI_3
           paym = total / losers.length
           recv = total / winner.length
@@ -197,8 +182,7 @@ module Reachy
 
       when T_NOTEN
         # Noten type: ignore all other params
-        self.next_round if @name == "0"
-        self.update_name
+        self.next_round
 
       when T_CHOMBO
         # Chombo type: loser = chombo player, winner = everyone else
@@ -213,7 +197,7 @@ module Reachy
         end
 
       else
-        printf "Invalid type: %s\n", type
+        printf "Invalid round result type\n", type
         puts nil
         return false
       end

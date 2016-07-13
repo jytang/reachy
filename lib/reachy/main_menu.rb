@@ -3,7 +3,12 @@ require_relative 'round'
 require_relative 'util'
 require_relative 'game_menu'
 
+
+##############################################
+# Main menu and top level interactions
+##############################################
 module Reachy
+
   # Main menu
   def self.main_menu
     loop do
@@ -127,12 +132,15 @@ module Reachy
                   "riichi" => 0,
                   "scores" => init_scoreboard}
     now_stamp = DateTime.now.to_s
+    init_clone = init_round.clone
+    init_clone["wind"] = "E"
+    init_clone["number"] = 1
     game_hash = {"filename" => name,
                  "created_at" => now_stamp,
                  "last_updated" => now_stamp,
                  "mode" => nump,
                  "players" => players,
-                 "scoreboard" => [init_round]}
+                 "scoreboard" => [init_round, init_clone]}
     newgame = Game.new(game_hash)
     newgame.write_data
 
