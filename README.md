@@ -29,9 +29,15 @@ Start the program:
 ./bin/reachy
 ```
 
-## Note
+Alternatively, build and install the gem:
 
-*When you reach the end of your rope, tie a knot and hang on*
+```
+gem build reachy.gemspec
+gem install reachy-1.0.gem
+reachy
+```
+
+## Note
 
 ```
 ...................................................................................................
