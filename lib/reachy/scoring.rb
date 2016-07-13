@@ -8,9 +8,10 @@ require_relative 'scoretable'
 module Scoring
 
   # Point constants
-  P_BONUS   = 300
-  P_RIICHI  = 1000
-  P_TENPAI  = 3000
+  P_BONUS     = 300
+  P_RIICHI    = 1000
+  P_TENPAI_3  = 2000
+  P_TENPAI_4  = 3000
 
   # Convert han, fu input to hash keys
   # Param: han - fixnum of han's
