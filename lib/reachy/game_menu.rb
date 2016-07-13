@@ -66,6 +66,18 @@ module Reachy
     end
   end
 
+  # Validate players input
+  def self.validate_players(players,game)
+    flag = true
+    players.each do |p|
+      if not game.players.include?(p)
+        printf "Error: Player \"%s\" not in current list of players\n", p
+        flag = false
+      end
+    end
+    return flag
+  end
+
   # Add a new round to the current game. Sub menu option 1.
   def self.add_round(game)
     puts "(Enter \"x\" to return to game options.)"
@@ -92,6 +104,7 @@ module Reachy
         winner = prompt "---> Winner's name: "
         return if winner == "x"
         winner = [winner]
+        if not validate_players(winner,game) then return end
 
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
@@ -103,20 +116,23 @@ module Reachy
       when "2"
         # Ron
         type = T_RON
-        winners = prompt "---> Winner(s): "
-        return if winners == "x"
-        winners = winner.split
+        puts nil
+        winner = prompt "---> Winner(s) (first winner gets bonus and riichi sticks): "
+        return if winner == "x"
+        winner = winner.split
+        if not validate_players(winner,game) then return end
 
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
-        # Validate loser not a winner too.
+        # TODO Validate loser not a winner too.
         if winners.include? loser
           puts "Loser can't be a winner..."
           next
         end
         loser = [loser]
+        if not validate_players(loser,game) then return end
 
-        hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+        hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"; must match winner(s) order): "
         puts nil
         return if hand == "x"
         hand = validate_hand(hand)
@@ -129,6 +145,7 @@ module Reachy
         winner = prompt "---> Player(s) in tenpai (separated by space): "
         return if winner == "x"
         winner = winner.split
+        if not validate_players(winner,game) then return end
 
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
@@ -148,6 +165,7 @@ module Reachy
         loser = prompt "---> Player who chombo'd: "
         return if loser == "x"
         loser = [loser]
+        if not validate_players(loser,game) then return end
 
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
