@@ -66,19 +66,6 @@ module Reachy
     end
   end
 
-  # Validate players input
-  def self.validate_players(players,game)
-    flag = true
-    plist = game.players.map {|x| x.downcase}
-    players.each do |p|
-      if not plist.include?(p)
-        printf "Error: Player \"%s\" not in current list of players\n", p
-        flag = false
-      end
-    end
-    return flag
-  end
-
   # Add a new round to the current game. Sub menu option 1.
   def self.add_round(game)
     puts "(Enter \"x\" to return to game options.)"
@@ -110,7 +97,7 @@ module Reachy
             winner.first
           winner = [winner.first]
         end
-        if not validate_players(winner,game) then next end
+        next if not validate_players(winner)
 
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
@@ -126,7 +113,7 @@ module Reachy
         winner = prompt "---> Winner(s) (first winner gets bonus and riichi sticks): "
         return if winner == "x"
         winner = winner.split
-        if not validate_players(winner,game) then next end
+        next if not validate_players(winner)
 
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
@@ -136,7 +123,7 @@ module Reachy
             loser.first
           loser = [loser.first]
         end
-        if not validate_players(loser,game) then next end
+        next if not validate_players(loser)
         if winners.include? loser.first
           puts "Loser can't be a winner..."
           next
@@ -159,7 +146,7 @@ module Reachy
         winner = prompt "---> Player(s) in tenpai (separated by space): "
         return if winner == "x"
         winner = winner.split
-        if not validate_players(winner,game) then next end
+        next if not validate_players(winner)
 
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
@@ -184,7 +171,7 @@ module Reachy
             loser.first
           loser = [loser.first]
         end
-        if not validate_players(loser,game) then next end
+        next if not validate_players(loser)
 
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
@@ -210,7 +197,7 @@ module Reachy
     puts nil
     player = prompt "---> Player(s) who declared riichi: "
     player = player.split
-    if not validate_players(player,game) then return end
+    return if not validate_players(player)
 
     player.each do |p|
       if game.add_riichi(p)

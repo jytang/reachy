@@ -35,6 +35,7 @@ module Reachy
         self.initialize_scoreboard
         self.write_data
       end
+      @plist = @players.map {|x| x.downcase}
     end
 
     # Populate @scoreboard with starting Round objects
@@ -130,9 +131,24 @@ module Reachy
       end
     end
 
+    # Move data file of this game to trash
     def delete_from_disk
       FileUtils.mv(File.expand_path("../../../data/" + @filename, __FILE__),
                    File.expand_path("../../../data/trash/" + @filename, __FILE__))
+    end
+
+    # Validate players input
+    # Param: players  - list of players to check
+    # Return: true if all players in list are in this game, else false
+    def validate_players(players)
+      flag = true
+      players.each do |p|
+        if not @plist.include?(p)
+          printf "Error: Player \"%s\" not in current list of players\n", p
+          flag = false
+        end
+      end
+      return flag
     end
 
     # Add riichi stick declared by player
