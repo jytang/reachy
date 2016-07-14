@@ -77,6 +77,7 @@ module Reachy
       @scoreboard.each do |r|
         hash["scoreboard"] << r.to_h
       end
+      hash.delete("plist")
       return hash
     end
 
