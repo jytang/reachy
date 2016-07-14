@@ -69,8 +69,9 @@ module Reachy
   # Validate players input
   def self.validate_players(players,game)
     flag = true
+    plist = game.players.map {|x| x.downcase}
     players.each do |p|
-      if not game.players.include?(p)
+      if not plist.include?(p)
         printf "Error: Player \"%s\" not in current list of players\n", p
         flag = false
       end
@@ -103,8 +104,13 @@ module Reachy
         type = T_TSUMO
         winner = prompt "---> Winner's name: "
         return if winner == "x"
-        winner = [winner]
-        if not validate_players(winner,game) then return end
+        winner = winner.split
+        if winner.length > 1
+          puts "  Assuming \"%s\" is the winner, ignoring remaining players.",
+            winner.first
+          winner = [winner.first]
+        end
+        if not validate_players(winner,game) then next end
 
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
@@ -120,23 +126,31 @@ module Reachy
         winner = prompt "---> Winner(s) (first winner gets bonus and riichi sticks): "
         return if winner == "x"
         winner = winner.split
-        if not validate_players(winner,game) then return end
+        if not validate_players(winner,game) then next end
 
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
-        # TODO Validate loser not a winner too.
-        if winners.include? loser
+        loser = loser.split
+        if loser.length > 1
+          puts "  Assuming \"%s\" is the player who dealt into winning hand.",
+            loser.first
+          loser = [loser.first]
+        end
+        if not validate_players(loser,game) then next end
+        if winners.include? loser.first
           puts "Loser can't be a winner..."
           next
         end
-        loser = [loser]
-        if not validate_players(loser,game) then return end
 
-        hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"; must match winner(s) order): "
+        hand = prompt "---> Hand value(s) (e.g. \"2 30 yakuman\" or \"mangan\"): "
         puts nil
         return if hand == "x"
         hand = validate_hand(hand)
 
+        if hand.length != winner.length
+          printf "The number of winners and winning hands do not match. " \
+                 "Please try again.\n\n"
+        end
         game.add_round(type, dealer, winners, loser, hand)
         break
       when "3"
@@ -145,7 +159,7 @@ module Reachy
         winner = prompt "---> Player(s) in tenpai (separated by space): "
         return if winner == "x"
         winner = winner.split
-        if not validate_players(winner,game) then return end
+        if not validate_players(winner,game) then next end
 
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
@@ -164,8 +178,13 @@ module Reachy
         type = T_CHOMBO
         loser = prompt "---> Player who chombo'd: "
         return if loser == "x"
-        loser = [loser]
-        if not validate_players(loser,game) then return end
+        loser = loser.split
+        if loser.length > 1
+          puts "  Assuming \"%s\" is the player who dealt into winning hand.",
+            loser.first
+          loser = [loser.first]
+        end
+        if not validate_players(loser,game) then next end
 
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
@@ -189,12 +208,15 @@ module Reachy
   def self.declare_riichi(game)
     puts "(Enter \"x\" to return to game options.)"
     puts nil
-    player = prompt "---> Player who declared riichi: "
-    return if player == "x"
+    player = prompt "---> Player(s) who declared riichi: "
+    player = player.split
+    if not validate_players(player,game) then return end
 
-    if game.add_riichi(player)
-      printf "\n*** Riichi stick added by %s.\n", player
-      game.print_current_sticks
+    player.each do |p|
+      if game.add_riichi(p)
+        printf "\n*** Riichi stick added by %s.\n", p
+        game.print_current_sticks
+      end
     end
   end
 

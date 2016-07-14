@@ -99,7 +99,11 @@ module Reachy
 
     # Add new round result
     def add_round(type, dealer, winner, loser, hand)
-      @scoreboard.last.update_round(type, dealer, winner, loser, hand)
+      if not @scoreboard.last.update_round(type, dealer, winner, loser, hand)
+        printf "  An error occurred while updating round score.\n" \
+               "  Please check your input (winner, hand) and try again.\n\n"
+        return
+      end
       self.clone_last_round
       self.write_data
     end

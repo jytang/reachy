@@ -48,6 +48,7 @@ module Reachy
       if dealer
         val = if keys_h.length == 2 then H_TSUMO["dealer"][keys_h[0]][keys_h[1]]
               else H_TSUMO["dealer"][keys_h[0]] end
+        if not val then return nil end
         return { "nondealer" => val }
       else
         val = if keys_h.length == 2 then H_TSUMO["nondealer"][keys_h[0]][keys_h[1]]
@@ -74,7 +75,9 @@ module Reachy
     # Return: hash of points
     def self.get_chombo(dealer)
       if dealer
-        return { "nondealer" => H_CHOMBO["dealer"] }
+        val = H_CHOMBO["dealer"]
+        if not val then return nil end
+        return { "nondealer" => val }
       else
         return H_CHOMBO["nondealer"]
       end

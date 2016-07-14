@@ -74,8 +74,10 @@ module Reachy
     flag = true
     while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
       if split_hand[i].match(/^\d+$/)
-        if split_hand[i+1].match(/^\d+$/)
-          hand << [split_hand[i].to_i, split_hand[i+1].to_i]
+        han = split_hand[i]
+        fu = split_hand[i+1]
+        if fu.match(/^\d+$/) && (fu.to_i==25 || fu.to_i%10 == 0)
+          hand << [han.to_i, fu.to_i]
           i += 2
         else
           flag = false
