@@ -1,56 +1,78 @@
 {
   "filename": "game2",
-  "created_at": "2016-12-05T14:05:00-07:00",
-  "last_updated": "2016-12-05T14:55:00-07:00",
+  "created_at": "2016-07-13T02:29:59-07:00",
+  "last_updated": "2016-07-13T02:33:53-07:00",
   "mode": 4,
-  "players": [ "Joshua", "Ken", "Kenta", "Thao" ],
+  "players": [
+    "Joshua",
+    "Kenta",
+    "Ken",
+    "Thao"
+  ],
   "scoreboard": [
     {
+      "name": "",
       "wind": null,
       "number": 0,
       "bonus": 0,
       "riichi": 0,
       "scores": {
         "joshua": 25000,
-        "ken": 25000,
         "kenta": 25000,
+        "ken": 25000,
         "thao": 25000
       }
     },
     {
-      "wind": "E",
-      "number": 1,
-      "bonus": 0,
-      "riichi": 0,
-      "scores": {
-        "joshua": 25000,
-        "ken": 37000,
-        "kenta": 13000,
-        "thao": 25000
-      }
-    },
-    {
+      "name": "E1",
       "wind": "E",
       "number": 1,
       "bonus": 1,
-      "riichi": 2,
+      "riichi": 1,
       "scores": {
-        "joshua": 37300,
-        "ken": 37000,
-        "kenta": 700,
-        "thao": 25000
+        "joshua": 26500,
+        "kenta": 23500,
+        "ken": 23500,
+        "thao": 25500
       }
     },
     {
+      "name": "E1B1R1",
       "wind": "E",
       "number": 2,
+      "bonus": 1,
+      "riichi": 1,
+      "scores": {
+        "joshua": 26500,
+        "kenta": 23500,
+        "ken": 23500,
+        "thao": 25500
+      }
+    },
+    {
+      "name": "E2B1R1",
+      "wind": "E",
+      "number": 3,
       "bonus": 0,
       "riichi": 0,
       "scores": {
-        "joshua": 37300,
-        "ken": 40900,
-        "kenta": -3200,
-        "thao": 25000
+        "joshua": 18200,
+        "kenta": 23500,
+        "ken": 23500,
+        "thao": 34800
+      }
+    },
+    {
+      "name": "E3",
+      "wind": "E",
+      "number": 3,
+      "bonus": 0,
+      "riichi": 0,
+      "scores": {
+        "joshua": 18200,
+        "kenta": 23500,
+        "ken": 23500,
+        "thao": 34800
       }
     }
   ]

@@ -10,26 +10,23 @@ module Reachy
     attr_reader   :mode           # Game mode
     attr_reader   :wind           # Round wind
     attr_reader   :number         # Round number
-    attr_reader   :bonus          # Bonus sticks at beginning of round
-    attr_accessor :riichi         # Riichi sticks available before round ends
+    attr_reader   :bonus          # Current bonus sticks
+    attr_accessor :riichi         # Current riichi sticks
     attr_accessor :scores         # Hash of <player's name> => <score>
 
     # Initialize round
     # Param: round - hash of round data
     # Populate Round object with info from hash
     def initialize(db)
+      @name = db["name"]
       @wind = db["wind"]
       @number = db["number"]
       @bonus = db["bonus"]
       @riichi = db["riichi"]
-      @name = @wind ? (@wind + @number.to_s) : "0"
-      @name += "B" + @bonus.to_s if @bonus > 0
-      @name += "R" + @riichi.to_s if @riichi > 0
       @scores = db["scores"]
       @mode = @scores.length
     end
 
-    # XXX: Need to be verified
     # Return a deep copy of this Round object
     def clone
       return Marshal.load(Marshal.dump(self))
@@ -39,7 +36,6 @@ module Reachy
     def to_h
       hash = self.instance_variables.each_with_object({}) \
         { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
-      hash.delete("name")
       hash.delete("mode")
       return hash
     end
@@ -96,7 +92,7 @@ module Reachy
             printf "Error: \"%s\" not in current list of players\n", l
           end
         end
-		@bonus = 0 if not dealer
+        @bonus = 0 if not dealer
         @scores[winner] += @riichi*Scoring::P_RIICHI
         @riichi = 0
         return true
@@ -108,7 +104,7 @@ module Reachy
 
     # Update round name
     def update_name
-      @name = @wind ? (@wind + @number.to_s) : "0"
+      @name = @wind ? (@wind + @number.to_s) : ""
       @name += "B" + @bonus.to_s if @bonus > 0
       @name += "R" + @riichi.to_s if @riichi > 0
     end
@@ -144,15 +140,7 @@ module Reachy
         losers = @scores.keys
         losers -= winner
         return false if not self.award_bonus(winner.first,losers,dealer_flag)
-        self.next_round if @name == "0"
-        self.update_name
-        @bonus += 1 if dealer_flag
-		self.next_round if not dealer_flag
-        # Hand validation: should be taken care of at input
-        #if hand.first.instance_of?(String) && not L_HANDS.include?(hand.first)
-        #  printf "\"%s\" is not a valid hand value!\n", hand.first
-        #  return false
-        #end
+        if dealer_flag then @bonus += 1 else self.next_round end
         score_h = Scoring.get_tsumo(dealer_flag, hand.first)
         winner.each do |w|
           @scores[w] += if dealer_flag then score_h["nondealer"]*(@mode-1)
@@ -165,10 +153,7 @@ module Reachy
       when T_RON
         # Ron type - can have multiple winners off of same loser
         return false if not self.award_bonus(winner.first,loser,dealer_flag)
-        self.next_round if @name == "0"
-        self.update_name
-        @bonus += 1 if dealer_flag
-		self.next_round if not dealer_flag
+        if dealer_flag then @bonus += 1 else self.next_round end
         winner.zip(hand).each do |w,h|
           paym = Scoring.get_ron((w==dealer),h)
           @scores[w] += paym
@@ -179,11 +164,8 @@ module Reachy
         # Tenpai type: losers = all - winners
         losers = @scores.keys
         losers -= winner
-        self.next_round if @name == "0"
-        self.update_name
         if winner.length < @mode
-          @bonus += 1 if dealer_flag
-		  self.next_round if not dealer_flag
+          if dealer_flag then @bonus += 1 else self.next_round end
           total = @mode==4 ? Scoring::P_TENPAI_4 : Scoring::P_TENPAI_3
           paym = total / losers.length
           recv = total / winner.length
@@ -197,8 +179,7 @@ module Reachy
 
       when T_NOTEN
         # Noten type: ignore all other params
-        self.next_round if @name == "0"
-        self.update_name
+        self.next_round
 
       when T_CHOMBO
         # Chombo type: loser = chombo player, winner = everyone else
@@ -213,7 +194,7 @@ module Reachy
         end
 
       else
-        printf "Invalid type: %s\n", type
+        printf "Invalid round result type\n", type
         puts nil
         return false
       end
@@ -222,8 +203,10 @@ module Reachy
     end
 
     # Print single line round scores
-    def print_scores
-      printf "%-#{COL_SPACING}s", @name
+    def print_scores(ongoing=false)
+      round_name = @name
+      round_name += "*" if ongoing
+      printf "%-#{COL_SPACING}s", round_name
       @scores.each do |key,val|
         printf "%-#{COL_SPACING}d", val
       end

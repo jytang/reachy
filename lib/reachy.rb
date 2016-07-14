@@ -23,8 +23,7 @@ module Reachy
     # Display all games in db
     read_all_games
     puts "*** Current existing game(s) in database:"
-    display_all_games
-    puts nil
+    if display_all_games then puts nil end
 
     # Display main menu options
     main_menu

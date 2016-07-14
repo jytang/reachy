@@ -3,7 +3,12 @@ require_relative 'round'
 require_relative 'util'
 require_relative 'game_menu'
 
+
+##############################################
+# Main menu and top level interactions
+##############################################
 module Reachy
+
   # Main menu
   def self.main_menu
     loop do
@@ -46,7 +51,7 @@ module Reachy
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game:"
-      display_all_games
+      if not display_all_games then return end
 
       choice = prompt "---> Enter your choice: "
       case choice
@@ -107,7 +112,7 @@ module Reachy
     # Ask for unique player handles
     good = false
     until good do
-      players = prompt "---> Player names (separated by spaces): "
+      players = prompt("---> Player names (separated by spaces): ", false)
       return false if nump == "x"
       players = players.split
       if players.length == nump and players.uniq.length == players.length
@@ -121,7 +126,8 @@ module Reachy
     start_score = nump == 3 ? 35000 : 25000
     init_scoreboard = Hash[ *players.collect { |p| [p.downcase, start_score] }.flatten]
     # Make new game object (TODO: do less hard coding)
-    init_round = {"wind" => nil,
+    init_round = {"name" => "",
+                  "wind" => nil,
                   "number" => 0,
                   "bonus" => 0,
                   "riichi" => 0,
@@ -134,6 +140,7 @@ module Reachy
                  "players" => players,
                  "scoreboard" => [init_round]}
     newgame = Game.new(game_hash)
+    newgame.clone_last_round(true)
     newgame.write_data
 
     # Add to @games array and go to its menu.
@@ -151,7 +158,7 @@ module Reachy
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game to delete:"
-      display_all_games
+      if not display_all_games then return end
       choice = prompt "---> Enter your choice: "
       case choice
       when "x"

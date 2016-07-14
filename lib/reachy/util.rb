@@ -3,13 +3,18 @@ module Reachy
   # Prompt for user input with a message.
   # If EOF is entered, aborts program.
   # Param: message - string to display
+  #        downcase - whether to downcase input
   # Return: User input
-  # Note: strips and downcases input!
-  def self.prompt(message)
+  # Note: always strips input!
+  def self.prompt(message, downcase=true)
     print message
     input = gets
     goodbye if !input
-    return input.strip.downcase
+    if downcase
+      return input.strip.downcase
+    else
+      return input.strip
+    end
   end
 
   # Read all games in data dir, and store in @games array
@@ -29,10 +34,16 @@ module Reachy
 
   # Print out all games in database
   def self.display_all_games
+    if @games.empty?
+      puts "  No game currently in database. Please add a new game."
+      puts nil
+      return false
+    end
     @games.each_with_index do |game, index|
       printf "  %d) ", index + 1
       game.print_title
     end
+    return true
   end
 
   def self.confirm_delete(chosen_game)
