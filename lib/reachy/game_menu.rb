@@ -91,7 +91,13 @@ module Reachy
         type = T_TSUMO
         winner = prompt "---> Winner's name: "
         return if winner == "x"
-        winner = [winner]
+        winner = winner.split
+        if winner.length > 1
+          puts "  Assuming \"%s\" is the winner, ignoring remaining players.",
+            winner.first
+          winner = [winner.first]
+        end
+        next if not game.validate_players(winner)
 
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
@@ -103,24 +109,35 @@ module Reachy
       when "2"
         # Ron
         type = T_RON
-        winners = prompt "---> Winner(s): "
-        return if winners == "x"
-        winners = winner.split
+        puts nil
+        winner = prompt "---> Winner(s) (first winner gets bonus and riichi sticks): "
+        return if winner == "x"
+        winner = winner.split
+        next if not game.validate_players(winner)
 
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
-        # Validate loser not a winner too.
-        if winners.include? loser
+        loser = loser.split
+        if loser.length > 1
+          puts "  Assuming \"%s\" is the player who dealt into winning hand.",
+            loser.first
+          loser = [loser.first]
+        end
+        next if not game.validate_players(loser)
+        if winners.include? loser.first
           puts "Loser can't be a winner..."
           next
         end
-        loser = [loser]
 
-        hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+        hand = prompt "---> Hand value(s) (e.g. \"2 30 yakuman\" or \"mangan\"): "
         puts nil
         return if hand == "x"
         hand = validate_hand(hand)
 
+        if hand.length != winner.length
+          printf "The number of winners and winning hands do not match. " \
+                 "Please try again.\n\n"
+        end
         game.add_round(type, dealer, winners, loser, hand)
         break
       when "3"
@@ -129,6 +146,7 @@ module Reachy
         winner = prompt "---> Player(s) in tenpai (separated by space): "
         return if winner == "x"
         winner = winner.split
+        next if not game.validate_players(winner)
 
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
@@ -147,7 +165,13 @@ module Reachy
         type = T_CHOMBO
         loser = prompt "---> Player who chombo'd: "
         return if loser == "x"
-        loser = [loser]
+        loser = loser.split
+        if loser.length > 1
+          puts "  Assuming \"%s\" is the player who dealt into winning hand.",
+            loser.first
+          loser = [loser.first]
+        end
+        next if not game.validate_players(loser)
 
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
@@ -171,12 +195,15 @@ module Reachy
   def self.declare_riichi(game)
     puts "(Enter \"x\" to return to game options.)"
     puts nil
-    player = prompt "---> Player who declared riichi: "
-    return if player == "x"
+    player = prompt "---> Player(s) who declared riichi: "
+    player = player.split
+    return if not game.validate_players(player)
 
-    if game.add_riichi(player)
-      printf "\n*** Riichi stick added by %s.\n", player
-      game.print_current_sticks
+    player.each do |p|
+      if game.add_riichi(p)
+        printf "\n*** Riichi stick added by %s.\n", p
+        game.print_current_sticks
+      end
     end
   end
 

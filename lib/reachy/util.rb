@@ -47,6 +47,7 @@ module Reachy
     return true
   end
 
+  # Confirm game deletion
   def self.confirm_delete(chosen_game)
     printf "---> Deleting game \"%s\". This action cannot be undone.\n", chosen_game.filename
     conf = prompt "  Are you sure? (y/N) "
@@ -73,8 +74,10 @@ module Reachy
     flag = true
     while i < split_hand.length   # Did this C-style AKA imperatively.. how to ruby
       if split_hand[i].match(/^\d+$/)
-        if split_hand[i+1].match(/^\d+$/)
-          hand << [split_hand[i].to_i, split_hand[i+1].to_i]
+        han = split_hand[i]
+        fu = split_hand[i+1]
+        if fu.match(/^\d+$/) && (fu.to_i==25 || fu.to_i%10 == 0)
+          hand << [han.to_i, fu.to_i]
           i += 2
         else
           flag = false
@@ -108,6 +111,7 @@ module Reachy
     puts nil
   end
 
+  # Call system cowsay if available
   def self.cowsay
     system("cowsay Bye!") if system("which cowsay >/dev/null 2>&1")
   end
