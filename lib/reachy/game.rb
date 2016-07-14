@@ -19,9 +19,38 @@ module Reachy
     attr_accessor :scoreboard       # List of round records
 
     # Initialize game from given hash
-    # Param: db - hash of game data
-    def initialize(db)
-      self.populate(db)
+    # Param: filename - name of json file
+    #        ondisk   - whether Game object exists on disk
+    #        players  - array of player names associatied with this game
+    def initialize(filename, ondisk=true, players=[])
+      if ondisk
+        # Game object exists on disk. Read it from file.
+        self.read_data(filename)
+      else
+        # Create new Game object with starting values.
+        @filename = filename
+        @created_at = DateTime.now
+        @last_updated = DateTime.now
+        @mode = players.length
+        @players = players
+        self.initialize_scoreboard
+        self.write_data
+      end
+    end
+
+    # Populate @scoreboard with starting Round objects
+    def initialize_scoreboard
+      # Make initial scores e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
+      start_score = mode == 3 ? 35000 : 25000
+      init_scores = Hash[ @players.map{ |p| [p.downcase, start_score] } ]
+      init_round = {"name" => "",
+                    "wind" => nil,
+                    "number" => 0,
+                    "bonus" => 0,
+                    "riichi" => 0,
+                    "scores" => init_scores}
+      @scoreboard = [init_round]
+      self.clone_last_round(true)
     end
 
     # Populate Game object with info from hash
@@ -40,8 +69,10 @@ module Reachy
 
     # Return Hash object representing Game object
     def to_h
-      hash = self.instance_variables.each_with_object({}) \
-        { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+      hash = {}
+      self.instance_variables.each do |var|
+        hash[var.to_s[1..-1]] = self.instance_variable_get(var)
+      end
       hash["scoreboard"] = []
       @scoreboard.each do |r|
         hash["scoreboard"] << r.to_h
@@ -50,8 +81,8 @@ module Reachy
     end
 
     # Read JSON database file and repopulate object
-    def read_data
-      filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
+    def read_data(filename)
+      filepath = File.expand_path("../../../data/" + filename, __FILE__)
       file = File.read(filepath)
       db = JSON.parse(file)
       self.populate(db)
@@ -61,7 +92,7 @@ module Reachy
     def write_data
       @last_updated = DateTime.now
       hash = self.to_h
-      filepath = File.expand_path("../../../data/" + @filename + ".json", __FILE__)
+      filepath = File.expand_path("../../../data/" + @filename, __FILE__)
       File.open(filepath, "w") do |f|
         f.write(JSON.pretty_generate(hash))
       end
@@ -94,6 +125,11 @@ module Reachy
         printf "Error: Current game already in initial state. " \
           "No round deleted.\n"
       end
+    end
+
+    def delete_from_disk
+      FileUtils.mv(File.expand_path("../../../data/" + @filename, __FILE__),
+                   File.expand_path("../../../data/trash/" + @filename, __FILE__))
     end
 
     # Add riichi stick declared by player

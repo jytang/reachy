@@ -25,9 +25,7 @@ module Reachy
       next if filename == '.' or filename == '..' or filename == "trash"
 
       # Create game objects
-      file = File.read(File.expand_path("../../../data/" + filename, __FILE__))
-      db = JSON.parse(file)
-      game = Game.new(db)
+      game = Game.new(filename)
       @games << game
     end
   end
@@ -51,10 +49,7 @@ module Reachy
     conf = prompt "  Are you sure? (y/N) "
     if conf == "y"
       # Move associated json file to trash.
-      filename = chosen_game.filename + ".json"
-      FileUtils.mv(File.expand_path("../../../data/" + filename, __FILE__),
-                   File.expand_path("../../../data/trash/" + filename, __FILE__))
-
+      chosen_game.delete_from_disk
       # Delete from @games array
       @games.delete(chosen_game)
       printf "*** Game \"%s\" deleted from database.\n\n", chosen_game.filename
@@ -64,7 +59,6 @@ module Reachy
       return false
     end
   end
-
 
   # Validate hand input
   # Param: hand - string of hand value input
@@ -104,8 +98,9 @@ module Reachy
     puts " Current winners:"
     puts " ----------------"
     @games.each do |game|
-      winner, winner_score = game.scoreboard.last.scores.max_by{ |player, score| score}
-      printf "  * %s: %s - %d points\n", game.filename, winner, winner_score
+      high_score = game.scoreboard.last.scores.values.max
+      winners = game.scoreboard.last.scores.select{ |player, score| score == high_score}
+      printf "  * %s: %s - %d points\n", game.filename, winners.keys.join(", "), high_score
     end
     puts nil
   end
@@ -124,4 +119,5 @@ module Reachy
     cowsay
     exit 0
   end
+
 end

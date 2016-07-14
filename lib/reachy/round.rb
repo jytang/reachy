@@ -34,8 +34,10 @@ module Reachy
 
     # Return Hash object representing Round object
     def to_h
-      hash = self.instance_variables.each_with_object({}) \
-        { |var, h| h[var.to_s.delete("@")] = self.instance_variable_get(var) }
+      hash = {}
+      self.instance_variables.each do |var|
+        hash[var.to_s[1..-1]] = self.instance_variable_get(var)
+      end
       hash.delete("mode")
       return hash
     end
