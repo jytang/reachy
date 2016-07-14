@@ -41,7 +41,7 @@ module Reachy
     # Populate @scoreboard with starting Round objects
     def initialize_scoreboard
       # Make initial scores e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
-      start_score = mode == 3 ? 35000 : 25000
+      start_score = mode == 3 ? P_START_3 : P_START_4
       init_scores = Hash[ @players.map{ |p| [p.downcase, start_score] } ]
       init_round = {"name" => "",
                     "wind" => nil,
@@ -183,11 +183,17 @@ module Reachy
       (COL_SPACING * (@mode+1)).times { printf "-" }
       puts nil
       self.print_header
-      @scoreboard[0..-2].each do |r|     # ignores last round - it's ongoing
-        r.print_scores
+      @scoreboard[0].print_scores(nil)  # print init scores
+      @scoreboard[1..-2].each_with_index do |curr,i|
+        delta = {}
+        prev = @scoreboard[i-1]
+        prev.scores.each do |k,v|
+          delta[k] = (curr.scores[k]-prev.scores[k]).to_f/1000
+        end
+        curr.print_scores(delta)
       end
       # print ongoing round
-      @scoreboard.last.print_scores(true)
+      @scoreboard.last.print_scores(nil,true)
       puts nil
     end
 

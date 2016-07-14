@@ -205,12 +205,28 @@ module Reachy
     end
 
     # Print single line round scores
-    def print_scores(ongoing=false)
+    # Param: delta    - hash of score deltas between this round and previous one
+    #        ongoing  - bool indicating if round is ongoing (optional)
+    def print_scores(delta,ongoing=false)
       round_name = @name
       round_name += "*" if ongoing
       printf "%-#{COL_SPACING}s", round_name
       @scores.each do |key,val|
-        printf "%-#{COL_SPACING}d", val
+        if delta
+          d = delta[key]
+          d = 0.0 if not d
+          if d == 0           # not sure why one-liner doesn't work here...
+            d = "="
+          elsif d < 0
+            d = d.to_s + "k"
+          else
+            d = "+" + d.to_s + "k"
+          end
+          val = val.to_s + "(" + d + ")"
+        else
+          val = val.to_s
+        end
+        printf "%-#{COL_SPACING}s", val
       end
       puts nil
     end
