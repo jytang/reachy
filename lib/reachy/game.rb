@@ -8,7 +8,6 @@ require_relative 'round'
 # Scoreboard record class
 ##############################################
 module Reachy
-
   class Game
 
     attr_reader   :filename         # Name of JSON file
@@ -49,7 +48,7 @@ module Reachy
                     "bonus" => 0,
                     "riichi" => 0,
                     "scores" => init_scores}
-      @scoreboard = [init_round]
+      @scoreboard = [Round.new(init_round)]
       self.clone_last_round(true)
     end
 

@@ -1,4 +1,8 @@
+##############################################
+# Reachy constants
+##############################################
 module Reachy
+
   # Scoreboard formatting
   COL_SPACING = 15
 

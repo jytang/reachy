@@ -12,6 +12,8 @@ module Reachy
     P_RIICHI    = 1000
     P_TENPAI_3  = 2000
     P_TENPAI_4  = 3000
+    P_START_3   = 35000
+    P_START_4   = 25000
 
     # Convert han, fu input to hash keys
     # Param: han - fixnum of han's

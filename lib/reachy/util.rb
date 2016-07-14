@@ -1,3 +1,6 @@
+##############################################
+# Reachy utilities
+##############################################
 module Reachy
 
   # Prompt for user input with a message.

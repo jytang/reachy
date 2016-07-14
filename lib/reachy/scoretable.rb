@@ -2,6 +2,7 @@
 # Hash objects containing scoring tables
 ##############################################
 module Reachy
+
   # Hash of tsumo scores
   H_TSUMO = {
     "dealer" => {
