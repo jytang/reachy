@@ -122,26 +122,7 @@ module Reachy
       end
     end
 
-    # Make initial scoreboard e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
-    start_score = nump == 3 ? 35000 : 25000
-    init_scoreboard = Hash[ *players.collect { |p| [p.downcase, start_score] }.flatten]
-    # Make new game object (TODO: do less hard coding)
-    init_round = {"name" => "",
-                  "wind" => nil,
-                  "number" => 0,
-                  "bonus" => 0,
-                  "riichi" => 0,
-                  "scores" => init_scoreboard}
-    now_stamp = DateTime.now.to_s
-    game_hash = {"filename" => name,
-                 "created_at" => now_stamp,
-                 "last_updated" => now_stamp,
-                 "mode" => nump,
-                 "players" => players,
-                 "scoreboard" => [init_round]}
-    newgame = Game.new(game_hash)
-    newgame.clone_last_round(true)
-    newgame.write_data
+    newgame = Game.new(name, false, players)
 
     # Add to @games array and go to its menu.
     @games << newgame

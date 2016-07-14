@@ -92,28 +92,36 @@ module Reachy
         winner = prompt "---> Winner's name: "
         return if winner == "x"
         winner = [winner]
+
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
         hand = validate_hand(hand)
+
         loser = []  # Round::update_round will set loser = all - winner
         game.add_round(type, dealer, winner, loser, hand)
         break
       when "2"
         # Ron
         type = T_RON
-        puts nil
-        winner = prompt "---> Winner(s): "
-        return if winner == "x"
-        winner = winner.split
+        winners = prompt "---> Winner(s): "
+        return if winners == "x"
+        winners = winner.split
+
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
+        # Validate loser not a winner too.
+        if winners.include? loser
+          puts "Loser can't be a winner..."
+          next
+        end
         loser = [loser]
-        # TODO: check that loser isn't a winner.
+
         hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
         puts nil
         return if hand == "x"
         hand = validate_hand(hand)
-        game.add_round(type, dealer, winner, loser, hand)
+
+        game.add_round(type, dealer, winners, loser, hand)
         break
       when "3"
         # Tenpai
@@ -121,6 +129,7 @@ module Reachy
         winner = prompt "---> Player(s) in tenpai (separated by space): "
         return if winner == "x"
         winner = winner.split
+
         loser = []  # Round::update_round will set losers = all - winners
         hand = []
         game.add_round(type, dealer, winner, loser, hand)
@@ -139,6 +148,7 @@ module Reachy
         loser = prompt "---> Player who chombo'd: "
         return if loser == "x"
         loser = [loser]
+
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
         game.add_round(type, dealer, winner, loser, hand)
@@ -158,12 +168,6 @@ module Reachy
   end
 
   # Update riichi sticks. Sub menu option 2.
-  # TODO: EOF support here
-  # Known bug: changes score of LAST round as well.
-  # Proposed solution: add Round object for the current round before it is finished.
-  #   i.e. game init should create two rounds "0" and "E1"
-  #   then declare_riichi, add_round would simply update E1
-  #   add_round would afterwards clone the round and append to scoreboard (as the NEXT round)
   def self.declare_riichi(game)
     puts "(Enter \"x\" to return to game options.)"
     puts nil
