@@ -21,7 +21,7 @@ module Reachy
         "  5) Delete current game\n" \
         "  6) Choose a different game\n" \
         "  7) Add new game\n", game.filename
-      choice = prompt "---> Enter your choice: "
+      choice = prompt_ch "---> Enter your choice: "
       case choice
       when "x"
         puts nil

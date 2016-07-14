@@ -15,4 +15,8 @@ module Reachy
 
   # List of named hand values
   L_HANDS   = ["mangan","haneman","baiman","sanbaiman","yakuman"]
+
+  # Special characters
+  SIGINT_CH = "\u0003"
+  EOF_CH = "\u0004"
 end

@@ -3,7 +3,6 @@ require_relative 'round'
 require_relative 'util'
 require_relative 'game_menu'
 
-
 ##############################################
 # Main menu and top level interactions
 ##############################################
@@ -17,7 +16,7 @@ module Reachy
         "  2) Add new game\n" \
         "  3) Delete existing game\n" \
         "  4) Display all scoreboards"
-      choice = prompt "---> Enter your choice: "
+      choice = prompt_ch "---> Enter your choice: "
       case choice
       when "1"
         puts "\n[View or update existing game scoreboard]"
@@ -51,7 +50,7 @@ module Reachy
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game:"
-      if not display_all_games then return end
+      return if not display_all_games
 
       choice = prompt "---> Enter your choice: "
       case choice
@@ -139,7 +138,7 @@ module Reachy
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game to delete:"
-      if not display_all_games then return end
+      return if not display_all_games
       choice = prompt "---> Enter your choice: "
       case choice
       when "x"
