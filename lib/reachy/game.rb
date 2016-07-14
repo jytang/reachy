@@ -184,13 +184,15 @@ module Reachy
       puts nil
       self.print_header
       @scoreboard[0].print_scores(nil)  # print init scores
-      @scoreboard[1..-2].each_with_index do |curr,i|
+      i = 1
+      @scoreboard[1..-2].each do |curr|
         delta = {}
         prev = @scoreboard[i-1]
         prev.scores.each do |k,v|
           delta[k] = (curr.scores[k]-prev.scores[k]).to_f/1000
         end
         curr.print_scores(delta)
+        i += 1
       end
       # print ongoing round
       @scoreboard.last.print_scores(nil,true)
