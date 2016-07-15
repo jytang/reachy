@@ -80,6 +80,16 @@ module Reachy
     end
   end
 
+  # Ensure that the data and data/trash directory exist, if not create them
+  def self.ensure_data_dir
+    if not File.directory?(File.expand_path("../../../data/", __FILE__))
+      Dir.mkdir File.expand_path("../../../data/", __FILE__)
+    end
+    if not File.directory?(File.expand_path("../../../data/trash/", __FILE__))
+      Dir.mkdir File.expand_path("../../../data/trash/", __FILE__)
+    end
+  end
+
   # Validate hand input
   # Param: hand - string of hand value input
   # Return: reformated hand value or empty list if input invalid
