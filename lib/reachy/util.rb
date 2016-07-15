@@ -32,6 +32,7 @@ module Reachy
     print message
     input = STDIN.getch
     goodbye if input == SIGINT_CH || input == EOF_CH
+    print input
     return input.downcase
   end
 

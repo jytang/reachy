@@ -99,8 +99,9 @@ module Reachy
     # Ask for unique game name.
     unique = false
     until unique do
-      name = prompt "---> Game name: "
+      name = prompt("---> Game name: ", false)
       return false if name == "x"
+      next if name.length == 0
       unique = true
       @games.each do |game|
         if game.filename == name
