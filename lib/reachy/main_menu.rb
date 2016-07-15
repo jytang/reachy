@@ -3,7 +3,6 @@ require_relative 'round'
 require_relative 'util'
 require_relative 'game_menu'
 
-
 ##############################################
 # Main menu and top level interactions
 ##############################################
@@ -17,7 +16,8 @@ module Reachy
         "  2) Add new game\n" \
         "  3) Delete existing game\n" \
         "  4) Display all scoreboards"
-      choice = prompt "---> Enter your choice: "
+      choice = prompt_ch "---> Enter your choice: "
+      puts nil
       case choice
       when "1"
         puts "\n[View or update existing game scoreboard]"
@@ -45,32 +45,47 @@ module Reachy
     end
   end
 
+  # Find number of prefix-match game choices
+  def self.choice_match
+    return (@games[@choice_buf.to_i] ? 1 : 0) if L_NEWLINE.include?(@choice_buf[-1])
+    l = (1..@games.length).map{|i| i if /\A#{@choice_buf}\d*\z/.match(i.to_s)}.compact
+    ret = l.length
+    return ret
+  end
+
   # View/update an existing game. Main menu option 1.
   def self.view_game
     loop do
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game:"
-      if not display_all_games then return end
+      return if not display_all_games
 
-      choice = prompt "---> Enter your choice: "
-      case choice
-      when "x"
+      @choice_buf = prompt_ch "---> Enter your choice: "
+      if @choice_buf == "x"
         puts nil
         return false # to main menu
-      when ""
-        puts "Enter a choice... >_>"
+      elsif L_NEWLINE.include?(@choice_buf)
+        puts "\n\nEnter a choice... >_>"
         puts nil
       else
-        # Check that choice consists only of digits and within @games bounds
-        if /\A\d+\z/.match(choice) and choice.to_i <= @games.length and choice.to_i > 0
-          # Print scoreboard for this game
-          @games[choice.to_i - 1].print_scoreboard
-          @selected_game_index = choice.to_i - 1
-          return true # to main menu
-        else
-          printf "Invalid choice: %s\n", choice
+        # Check if current input buffer represents a unique game
+        matches = choice_match
+        while matches > 1
+          @choice_buf += prompt_ch ""
+          matches = choice_match
+        end
+        puts nil
+        puts nil
+        if choice_match == 0
+          printf "Invalid choice: %s\n", @choice_buf
           puts nil
+        else
+          c = @choice_buf.to_i
+          # Print scoreboard for this game
+          @games[c - 1].print_scoreboard
+          @selected_game_index = c - 1
+          return true # to main menu
         end
       end
     end
@@ -84,8 +99,9 @@ module Reachy
     # Ask for unique game name.
     unique = false
     until unique do
-      name = prompt "---> Game name: "
+      name = prompt("---> Game name: ", false)
       return false if name == "x"
+      next if name.length == 0
       unique = true
       @games.each do |game|
         if game.filename == name
@@ -139,7 +155,7 @@ module Reachy
       puts "(Enter \"x\" to go back to main menu.)"
       puts nil
       puts "*** Choose existing game to delete:"
-      if not display_all_games then return end
+      return if not display_all_games
       choice = prompt "---> Enter your choice: "
       case choice
       when "x"

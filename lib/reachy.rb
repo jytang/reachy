@@ -3,7 +3,6 @@
 require 'rubygems'
 require 'date'
 require 'fileutils'
-require 'io/console'
 
 require_relative 'reachy/game'
 require_relative 'reachy/util'
@@ -23,7 +22,7 @@ module Reachy
     # Display all games in db
     read_all_games
     puts "*** Current existing game(s) in database:"
-    if display_all_games then puts nil end
+    puts nil if display_all_games
 
     # Display main menu options
     main_menu

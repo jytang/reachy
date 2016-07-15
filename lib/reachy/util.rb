@@ -1,3 +1,7 @@
+require 'io/console'
+
+require_relative 'defines'
+
 ##############################################
 # Reachy utilities
 ##############################################
@@ -18,6 +22,18 @@ module Reachy
     else
       return input.strip
     end
+  end
+
+  # Prompt for one character, downcased.
+  # If EOF is entered, aborts program.
+  # Param: message - string to display
+  # Return: User input character, downcased
+  def self.prompt_ch(message)
+    print message
+    input = STDIN.getch
+    goodbye if input == SIGINT_CH || input == EOF_CH
+    print input
+    return input.downcase
   end
 
   # Read all games in data dir, and store in @games array
