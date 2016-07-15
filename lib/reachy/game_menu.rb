@@ -22,6 +22,7 @@ module Reachy
         "  6) Choose a different game\n" \
         "  7) Add new game\n", game.filename
       choice = prompt_ch "---> Enter your choice: "
+      puts nil
       case choice
       when "x"
         puts nil

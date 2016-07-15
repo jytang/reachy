@@ -17,6 +17,7 @@ module Reachy
   L_HANDS   = ["mangan","haneman","baiman","sanbaiman","yakuman"]
 
   # Special characters
+  L_NEWLINE = ["\r","\n","\r\n"]
   SIGINT_CH = "\u0003"
   EOF_CH = "\u0004"
 end

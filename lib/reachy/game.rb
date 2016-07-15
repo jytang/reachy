@@ -41,7 +41,7 @@ module Reachy
     # Populate @scoreboard with starting Round objects
     def initialize_scoreboard
       # Make initial scores e.g. { "joshua" => 35000, "kenta" => 35000, "thao" => 35000 }
-      start_score = mode == 3 ? P_START_3 : P_START_4
+      start_score = mode == 3 ? Scoring::P_START_3 : Scoring::P_START_4
       init_scores = Hash[ @players.map{ |p| [p.downcase, start_score] } ]
       init_round = {"name" => "",
                     "wind" => nil,
