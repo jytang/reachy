@@ -102,6 +102,10 @@ module Reachy
       name = prompt("---> Game name: ", false)
       return false if name == "x"
       next if name.length == 0
+      if not /\A\w+\z/.match(name)
+        printf "Please enter only alphanumeric characters and underscores.\n"
+        next
+      end
       unique = true
       @games.each do |game|
         if game.filename == name
