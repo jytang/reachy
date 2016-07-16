@@ -4,7 +4,7 @@ Gem::Specification.new do |spec|
     spec.version        = "1.0"
     spec.authors        = ["Thao Truong (Kainu)", "Joshua Tang"]
     spec.email          = "someone@nowhere.com"
-    spec.homepage       = "https://reachy.herokuapp.com"
+    spec.homepage       = "https://github.com/jytang/reachy"
     spec.license        = 'WTFPL'
     spec.summary        = %q{Riichi Score Tracker}
     spec.files          = Dir.glob("{bin,lib,data}/**/*")
