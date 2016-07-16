@@ -22,11 +22,11 @@ module Reachy
       when "1"
         puts "\n[View or update existing game scoreboard]"
         puts nil
-        game_menu if view_game
+        if view_game then game_menu else puts nil end
       when "2"
         puts "\n[Add new game]"
         puts nil
-        game_menu if add_game
+        if add_game then game_menu else puts nil end
       when "3"
         puts "\n[Delete existing game]"
         puts nil
