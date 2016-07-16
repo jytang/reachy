@@ -125,7 +125,7 @@ module Reachy
           loser = [loser.first]
         end
         next if not game.validate_players(loser)
-        if winners.include? loser.first
+        if winner.include? loser.first
           puts "Loser can't be a winner..."
           next
         end
@@ -139,7 +139,7 @@ module Reachy
           printf "The number of winners and winning hands do not match. " \
                  "Please try again.\n\n"
         end
-        game.add_round(type, dealer, winners, loser, hand)
+        game.add_round(type, dealer, winner, loser, hand)
         break
       when "3"
         # Tenpai
