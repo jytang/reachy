@@ -22,11 +22,11 @@ module Reachy
       when "1"
         puts "\n[View or update existing game scoreboard]"
         puts nil
-        game_menu if view_game
+        if view_game then game_menu else puts nil end
       when "2"
         puts "\n[Add new game]"
         puts nil
-        game_menu if add_game
+        if add_game then game_menu else puts nil end
       when "3"
         puts "\n[Delete existing game]"
         puts nil
@@ -102,6 +102,10 @@ module Reachy
       name = prompt("---> Game name: ", false)
       return false if name == "x"
       next if name.length == 0
+      if not /\A\w+\z/.match(name)
+        printf "Please enter only alphanumeric characters and underscores.\n"
+        next
+      end
       unique = true
       @games.each do |game|
         if game.filename == name
