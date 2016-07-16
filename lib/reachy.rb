@@ -20,6 +20,7 @@ module Reachy
     puts nil
 
     # Display all games in db
+    ensure_data_dir
     read_all_games
     puts "*** Current existing game(s) in database:"
     puts nil if display_all_games
