@@ -17,24 +17,23 @@ as you play.
 
 ### 2. Installation and Usage
 
-Clone this repo:
+Simply install using [RubyGems](https://rubygems.org):
+```
+gem install reachy
+```
 
+Start the program. Ensure that the ``EXECUTABLE_DIRECTORY`` listed in ``gem env`` is in your ``$PATH``
+
+```
+reachy
+```
+
+Manual installation:
 ```
 git clone https://github.com/jytang/reachy.git
-```
-
-Start the program:
-
-```
-./bin/reachy
-```
-
-Alternatively, build and install the gem:
-
-```
+cd reachy
 gem build reachy.gemspec
 gem install reachy-1.0.gem
-reachy
 ```
 
 ## Note
