@@ -83,7 +83,7 @@ module Reachy
 
     # Read JSON database file and repopulate object
     def read_data(filename)
-      filepath = File.expand_path("../../../data/" + filename, __FILE__)
+      filepath = DATA_PATH + "/" + filename
       file = File.read(filepath)
       db = JSON.parse(file)
       self.populate(db)
@@ -93,7 +93,7 @@ module Reachy
     def write_data
       @last_updated = DateTime.now
       hash = self.to_h
-      filepath = File.expand_path("../../../data/" + @filename, __FILE__)
+      filepath = DATA_PATH + "/" + @filename
       File.open(filepath, "w") do |f|
         f.write(JSON.pretty_generate(hash))
       end
@@ -134,8 +134,8 @@ module Reachy
 
     # Move data file of this game to trash
     def delete_from_disk
-      FileUtils.mv(File.expand_path("../../../data/" + @filename, __FILE__),
-                   File.expand_path("../../../data/trash/" + @filename, __FILE__))
+      FileUtils.mv(DATA_PATH + "/" + @filename,
+                   DATA_PATH + "/trash/" + @filename)
     end
 
     # Validate players input

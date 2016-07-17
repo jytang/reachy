@@ -3,6 +3,10 @@
 ##############################################
 module Reachy
 
+  # Path
+  APP_NAME  = "reachy"
+  DATA_PATH = Dir.home + "/" + APP_NAME + "/data"
+
   # Scoreboard formatting
   COL_SPACING = 15
 
