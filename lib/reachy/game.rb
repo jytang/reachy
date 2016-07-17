@@ -202,7 +202,7 @@ module Reachy
     # E1B1R2      33400     39800     31800
     def print_last_round
       self.print_header
-      @scoreboard[-2].print_scores
+      @scoreboard[-2].print_scores(nil)
     end
 
     # Print 1-line game title

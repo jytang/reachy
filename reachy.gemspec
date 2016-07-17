@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
     spec.homepage       = "https://github.com/jytang/reachy"
     spec.license        = 'WTFPL'
     spec.summary        = %q{Riichi Score Tracker}
-    spec.files          = Dir.glob("{bin,lib,data}/**/*")
+    spec.files          = Dir.glob("{bin,lib}/**/*")
     spec.test_files     = ["tests/test_reachy.rb"]
     spec.require_paths  = ["lib"]
     spec.executables    = ["reachy"]
