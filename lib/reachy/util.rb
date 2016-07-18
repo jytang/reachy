@@ -39,7 +39,7 @@ module Reachy
   # Read all games in data dir, and store in @games array
   def self.read_all_games
     @games = []
-    Dir.foreach(File.expand_path("../../../data/", __FILE__)) do |filename|
+    Dir.foreach(DATA_PATH) do |filename|
       # Skip . and .. dir entries, and trash dir
       next if filename == '.' or filename == '..' or filename == "trash"
 
@@ -82,11 +82,14 @@ module Reachy
 
   # Ensure that the data and data/trash directory exist, if not create them
   def self.ensure_data_dir
-    if not File.directory?(File.expand_path("../../../data/", __FILE__))
-      Dir.mkdir File.expand_path("../../../data/", __FILE__)
+    if not File.directory?(ROOT_PATH)
+      Dir.mkdir ROOT_PATH
     end
-    if not File.directory?(File.expand_path("../../../data/trash/", __FILE__))
-      Dir.mkdir File.expand_path("../../../data/trash/", __FILE__)
+    if not File.directory?(DATA_PATH)
+      Dir.mkdir DATA_PATH
+    end
+    if not File.directory?(TRASH_PATH)
+      Dir.mkdir TRASH_PATH
     end
   end
 
