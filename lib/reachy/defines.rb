@@ -5,7 +5,9 @@ module Reachy
 
   # Path
   APP_NAME  = "reachy"
-  DATA_PATH = Dir.home + "/" + APP_NAME + "/data"
+  ROOT_PATH = Dir.home + "/." + APP_NAME + "/"
+  DATA_PATH = ROOT_PATH + "data/"
+  TRASH_PATH = DATA_PATH + "trash/"
 
   # Scoreboard formatting
   COL_SPACING = 15
