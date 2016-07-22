@@ -15,7 +15,7 @@ module Reachy
   # Note: always strips input!
   def self.prompt(message, downcase=true)
     print message
-    input = gets
+    input = $stdin.gets
     goodbye if !input
     if downcase
       return input.strip.downcase

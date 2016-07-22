@@ -1,7 +1,7 @@
 # coding: utf-8
 Gem::Specification.new do |spec|
     spec.name           = "reachy"
-    spec.version        = "1.2"
+    spec.version        = "1.3"
     spec.authors        = ["Thao Truong (Kainu)", "Joshua Tang"]
     spec.email          = "someone@nowhere.com"
     spec.homepage       = "https://github.com/jytang/reachy"
