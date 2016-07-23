@@ -18,6 +18,7 @@ module Reachy
   T_TENPAI  = 3
   T_NOTEN   = 4
   T_CHOMBO  = 5
+  T_RESET   = 6
 
   # List of named hand values
   L_HANDS   = ["mangan","haneman","baiman","sanbaiman","yakuman"]

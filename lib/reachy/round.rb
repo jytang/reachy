@@ -166,8 +166,8 @@ module Reachy
         # Tenpai type: losers = all - winners
         losers = @scores.keys
         losers -= winner
+        if dealer_flag then @bonus += 1 else self.next_round end
         if winner.length < @mode
-          if dealer_flag then @bonus += 1 else self.next_round end
           total = @mode==4 ? Scoring::P_TENPAI_4 : Scoring::P_TENPAI_3
           paym = total / losers.length
           recv = total / winner.length
@@ -194,6 +194,10 @@ module Reachy
         winners.each do |w|
           @scores[w] += score_h[w==dealer ? "dealer" : "nondealer"]
         end
+
+      when T_RESET
+        # Round reset: add bonus stick
+        @bonus += 1
 
       else
         printf "Invalid round result type\n", type
