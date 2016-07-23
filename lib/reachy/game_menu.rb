@@ -81,7 +81,8 @@ module Reachy
         "  2) Ron\n" \
         "  3) Tenpai\n" \
         "  4) Noten\n" \
-        "  5) Chombo\n"
+        "  5) Chombo\n" \
+        "  6) Round reset\n"
       choice = prompt "---> Select round result: "
       case choice
       when "x"
@@ -100,7 +101,7 @@ module Reachy
         end
         next if not game.validate_players(winner)
 
-        hand = prompt "---> Hand value(s) (e.g. \"2 30\" or \"mangan\"): "
+        hand = prompt "---> Hand value (e.g. \"2 30\" or \"mangan\"): "
         return if hand == "x"
         hand = validate_hand(hand)
 
@@ -116,6 +117,15 @@ module Reachy
         winner = winner.split
         next if not game.validate_players(winner)
 
+        hand = prompt "---> Hand value(s) (e.g. \"2 30 yakuman\" or \"mangan\"): "
+        puts nil
+        return if hand == "x"
+        hand = validate_hand(hand)
+        if hand.length != winner.length
+          printf "The number of winners and winning hands do not match. " \
+                 "Please try again.\n\n"
+        end
+
         loser = prompt "---> Player who dealt into winning hand(s): "
         return if loser == "x"
         loser = loser.split
@@ -130,15 +140,6 @@ module Reachy
           next
         end
 
-        hand = prompt "---> Hand value(s) (e.g. \"2 30 yakuman\" or \"mangan\"): "
-        puts nil
-        return if hand == "x"
-        hand = validate_hand(hand)
-
-        if hand.length != winner.length
-          printf "The number of winners and winning hands do not match. " \
-                 "Please try again.\n\n"
-        end
         game.add_round(type, dealer, winner, loser, hand)
         break
       when "3"
@@ -177,6 +178,16 @@ module Reachy
         winner = [] # Round::update_round will set winners = all - loser
         hand = []
         game.add_round(type, dealer, winner, loser, hand)
+        break
+      when "6"
+        # Round reset
+        type = T_RESET
+        winner = []
+        loser = []
+        hand = []
+        game.add_round(type, dealer, winner, loser, hand)
+        puts "*** Round reset."
+        puts nil
         break
       when ""
         puts "Enter a choice... >_>"
